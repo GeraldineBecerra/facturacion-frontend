@@ -1,0 +1,39 @@
+<div class="p-6 md:p-10 space-y-8 bg-slate-100/80 min-h-full">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+  <!-- @for (stat of stats; track stat.label) {
+
+    <app-stats-card
+      [label]="stat.label"
+      [value]="stat.value"
+      [description]="stat.description"
+      [icon]="stat.icon"
+      [trend]="stat.trend"
+    />
+
+  } -->
+</div>
+  <app-page-header
+    headerTitle="Gestión de Usuarios"
+    subtitle="Administra el acceso y roles en la plataforma."
+    buttonLabel="Nuevo Usuario"
+    (buttonClick)="createUser()">
+  </app-page-header>
+
+  <section class="bg-white border border-slate-200 rounded-2xl p-4 md:p-6 shadow-sm">
+    <div class="flex items-center justify-between mb-4">
+      <p class="text-sm text-slate-500">Listado de usuarios con control de acceso y estado de cuenta.</p>
+      <span class="text-xs font-semibold px-3 py-1 rounded-full bg-blue-50 text-blue-700">
+        {{ users.length }} registros
+      </span>
+    </div>
+
+    <app-table
+      [columns]="columns"
+      [data]="users"
+      (edit)="editUser($event)"
+      (delete)="deleteUser($event)"
+      [totalItems]="users.length"
+    />
+  </section>
+
+</div>

@@ -1,0 +1,174 @@
+<div class="max-w-5xl mx-auto pb-8">
+  <header class="mb-8">
+    <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 mb-2">
+      Nueva empresa
+    </h1>
+    <p class="text-slate-600 max-w-2xl">
+      Registra una nueva empresa en el sistema
+    </p>
+  </header>
+
+  <div class="card">
+    <form (ngSubmit)="guardar()" class="space-y-8">
+      <!-- Identificación -->
+      <section>
+        <div class="section-header">
+          <span class="icon-box">
+            <span class="material-symbols-outlined text-[20px]">business</span>
+          </span>
+          <h2 class="section-title">Identificación</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="form-field">
+            <label class="required" for="rutEmpresa">RUT empresa</label>
+            <input id="rutEmpresa" name="rutEmpresa" type="text" class="input"
+              [(ngModel)]="empresa.rutEmpresa" required placeholder="Ej. 76.123.456-K" />
+          </div>
+
+          <div class="form-field">
+            <label class="required" for="razonSocial">Razón social</label>
+            <input id="razonSocial" name="razonSocial" type="text" class="input"
+              [(ngModel)]="empresa.razonSocial" required placeholder="Razón social legal" />
+          </div>
+
+          <div class="form-field">
+            <label for="nombreFantasia">Nombre fantasía</label>
+            <input id="nombreFantasia" name="nombreFantasia" type="text" class="input"
+              [(ngModel)]="empresa.nombreFantasia" placeholder="Nombre comercial (opcional)" />
+          </div>
+
+          <div class="form-field">
+            <label for="giro">Giro</label>
+            <input id="giro" name="giro" type="text" class="input"
+              [(ngModel)]="empresa.giro" placeholder="Actividad económica" />
+          </div>
+
+          <div class="form-field md:col-span-2">
+            <label class="mb-1">Empresa activa</label>
+            <div class="toggle-box">
+              <div class="flex flex-col gap-0.5">
+                <span class="text-sm font-bold text-slate-800">Estado en plataforma</span>
+                <span class="text-xs text-slate-500">Por defecto activa (nullable false en entidad)</span>
+              </div>
+              <input type="checkbox" name="activo" [(ngModel)]="empresa.activo" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- Ubicación y contacto -->
+      <section>
+        <div class="section-header">
+          <span class="icon-box">
+            <span class="material-symbols-outlined text-[20px]">location_on</span>
+          </span>
+          <h2 class="section-title">Ubicación y contacto</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="form-field md:col-span-2">
+            <label for="direccion">Dirección</label>
+            <input id="direccion" name="direccion" type="text" class="input"
+              [(ngModel)]="empresa.direccion" placeholder="Calle, número, oficina" />
+          </div>
+
+          <div class="form-field">
+            <label for="ciudad">Ciudad</label>
+            <input id="ciudad" name="ciudad" type="text" class="input"
+              [(ngModel)]="empresa.ciudad" placeholder="Ciudad" />
+          </div>
+
+          <div class="form-field">
+            <label for="comuna">Comuna</label>
+            <input id="comuna" name="comuna" type="text" class="input"
+              [(ngModel)]="empresa.comuna" placeholder="Comuna" />
+          </div>
+
+          <div class="form-field">
+            <label for="pais">País</label>
+            <input id="pais" name="pais" type="text" class="input"
+              [(ngModel)]="empresa.pais" placeholder="País" />
+          </div>
+
+          <div class="form-field">
+            <label for="telefono">Teléfono</label>
+            <input id="telefono" name="telefono" type="tel" class="input"
+              [(ngModel)]="empresa.telefono" placeholder="+56 9 1234 5678" />
+          </div>
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- Correos y web -->
+      <section>
+        <div class="section-header">
+          <span class="icon-box">
+            <span class="material-symbols-outlined text-[20px]">mail</span>
+          </span>
+          <h2 class="section-title">Correos y sitio web</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="form-field md:col-span-2">
+            <label for="sitioWeb">Sitio web</label>
+            <input id="sitioWeb" name="sitioWeb" type="url" class="input"
+              [(ngModel)]="empresa.sitioWeb" placeholder="https://www.empresa.cl" />
+          </div>
+
+          <div class="form-field">
+            <label for="emailPrincipal">Email principal</label>
+            <input id="emailPrincipal" name="emailPrincipal" type="email" class="input"
+              [(ngModel)]="empresa.emailPrincipal" placeholder="contacto@empresa.cl" />
+          </div>
+
+          <div class="form-field">
+            <label for="emailContabilidad">Email contabilidad</label>
+            <input id="emailContabilidad" name="emailContabilidad" type="email" class="input"
+              [(ngModel)]="empresa.emailContabilidad" placeholder="contabilidad@empresa.cl" />
+          </div>
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- Representante -->
+      <section>
+        <div class="section-header">
+          <span class="icon-box">
+            <span class="material-symbols-outlined text-[20px]">badge</span>
+          </span>
+          <h2 class="section-title">Representante legal</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="form-field">
+            <label for="rutRepresentante">RUT representante</label>
+            <input id="rutRepresentante" name="rutRepresentante" type="text" class="input"
+              [(ngModel)]="empresa.rutRepresentante" placeholder="Ej. 12.345.678-9" />
+          </div>
+
+          <div class="form-field">
+            <label for="nombreRepresentante">Nombre representante</label>
+            <input id="nombreRepresentante" name="nombreRepresentante" type="text" class="input"
+              [(ngModel)]="empresa.nombreRepresentante" placeholder="Nombre completo" />
+          </div>
+
+          <div class="form-field md:col-span-2">
+            <label for="telefonoRepresentante">Teléfono representante</label>
+            <input id="telefonoRepresentante" name="telefonoRepresentante" type="tel" class="input"
+              [(ngModel)]="empresa.telefonoRepresentante" placeholder="+56 9 8765 4321" />
+          </div>
+        </div>
+      </section>
+
+      <div class="actions">
+        <button type="button" class="btn-cancel" (click)="cancelar()">Cancelar</button>
+        <button type="submit" class="btn-primary">Guardar empresa</button>
+      </div>
+    </form>
+  </div>
+</div>
