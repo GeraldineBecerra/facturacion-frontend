@@ -1,0 +1,17 @@
+<app-navbar (toggleSidebar)="toggleSidebar()"></app-navbar>
+
+<div class="flex bg-slate-100">
+
+  <app-sidebar [collapsed]="collapsed"></app-sidebar>
+
+  <main
+    class="flex-1 min-h-screen transition-all duration-300"
+    [class.ml-64]="!collapsed"
+    [class.ml-20]="collapsed"
+  >
+    <div class="p-4 md:p-6">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+
+</div>

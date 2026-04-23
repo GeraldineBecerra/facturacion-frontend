@@ -1,0 +1,32 @@
+<nav class="sticky top-0 z-50 border-b border-slate-200/70 bg-white/90 backdrop-blur">
+  <div class="h-16 px-4 md:px-6 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <button (click)="toggleSidebar.emit()"
+        class="h-10 w-10 rounded-xl border border-slate-200 flex items-center justify-center hover:bg-slate-100 transition-colors">
+        <lucide-icon [img]="Menu" class="w-4 h-4"></lucide-icon>
+      </button>
+
+      <div>
+        <p class="text-[11px] uppercase tracking-[0.12em] text-slate-500">Workspace</p>
+        <h1 class="text-base md:text-lg font-bold tracking-tight">Facturacion Dashboard</h1>
+      </div>
+    </div>
+
+    <div class="hidden md:flex items-center gap-2 px-3 h-10 rounded-xl border border-slate-200 bg-white min-w-64">
+      <lucide-icon [img]="Search" class="w-4 h-4 text-slate-400"></lucide-icon>
+      <input type="text" placeholder="Buscar usuarios, empresas..."
+        class="w-full bg-transparent outline-none text-sm placeholder:text-slate-400" />
+    </div>
+
+    <div class="flex items-center gap-2">
+      <button
+        class="h-10 w-10 rounded-xl border border-slate-200 flex items-center justify-center hover:bg-slate-100 transition-colors">
+        <lucide-icon [img]="Bell" class="w-4 h-4"></lucide-icon>
+      </button>
+
+      <div class="h-10 w-10 rounded-xl bg-slate-200 overflow-hidden ring-2 ring-slate-100">
+        <img src="https://i.pravatar.cc/40" alt="Avatar">
+      </div>
+    </div>
+  </div>
+</nav>
