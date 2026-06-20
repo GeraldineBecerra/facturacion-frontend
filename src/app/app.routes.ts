@@ -17,24 +17,24 @@ export const routes: Routes = [
             // },
 
             {
-                path: 'users',
+                path: 'usuarios',
                 loadComponent: () =>
                     import('./features/user/user-list/user-list')
                         .then(m => m.UserList)
             },
             {
-                path: 'users/new',
+                path: 'usuarios/nuevo',
                 component: UserForm
             },
 
             {
-                path: 'companies',
+                path: 'empresas',
                 loadComponent: () =>
                     import('./features/company/company-list/company-list')
                         .then(m => m.CompaniesList)
             },
             {
-                path: 'companies/new',
+                path: 'empresas/nueva',
                 loadComponent: () =>
                     import('./features/company/company-form/company-form')
                         .then(m => m.CompanyForm)

@@ -14,18 +14,12 @@
 
   @if (buttonLabel) {
 
-    <button
-      (click)="buttonClick.emit()"
-      class="h-10 flex items-center gap-2 px-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
-    >
-
+    <ui-button (clicked)="buttonClick.emit()">
       <span class="material-symbols-outlined text-[20px]">
         add
       </span>
-
       {{ buttonLabel }}
-
-    </button>
+    </ui-button>
 
   }
 

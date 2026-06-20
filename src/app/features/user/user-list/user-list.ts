@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
-import { PageHeaderComponent } from '../../../core/shared/components/header/page-header.component';
-import { DynamicTableComponent } from '../../../core/shared/components/table/table.component';
-import { StatItem } from "../../../core/shared/components/stats-grid/stats-grid.component";
-import { StatsCardComponent } from "../../../core/shared/components/stats-card/stats-card.component";
+import { PageHeaderComponent } from '../../../shared/components/header/page-header.component';
+import {
+    DynamicTableComponent,
+    TableAction,
+    TableColumn,
+} from '../../../shared/components/table/table';
 import { Router } from '@angular/router';
 
 @Component({
@@ -16,41 +18,34 @@ import { Router } from '@angular/router';
 })
 export class UserList {
     constructor(private router: Router) { }
-    columns = [
+    columns: TableColumn[] = [
         { key: 'name', label: 'Nombre' },
         { key: 'email', label: 'Email' },
         { key: 'role', label: 'Rol' },
-        { key: 'status', label: 'Estado' }
+        {
+            key: 'status',
+            label: 'Estado',
+            type: 'badge',
+            badgeColors: {
+                Active: 'bg-emerald-100 text-emerald-800',
+                Suspended: 'bg-amber-100 text-amber-800',
+            },
+        },
     ];
-    stats: StatItem[] = [
+
+    actions: TableAction[] = [
         {
-            label: 'Total Users',
-            value: 1284,
-            description: '+12% vs last month',
-            icon: 'group',
-            trend: 'up'
+            type: 'custom',
+            label: 'Editar',
+            icon: 'edit',
+            clickFn: (user) => this.editUser(user),
+            colorClass: 'text-blue-600 hover:bg-blue-50',
         },
         {
-            label: 'Active Roles',
-            value: 14,
-            description: 'System architectures',
-            icon: 'security',
-            trend: 'neutral'
+            type: 'delete',
+            label: 'Eliminar',
+            clickFn: (user) => this.deleteUser(user),
         },
-        {
-            label: 'Security Flags',
-            value: 0,
-            description: 'System stable',
-            icon: 'check_circle',
-            trend: 'up'
-        },
-        {
-            label: 'Avg Response',
-            value: '1.2s',
-            description: 'Server latency',
-            icon: 'speed',
-            trend: 'neutral'
-        }
     ];
     users = [
         {
@@ -128,7 +123,7 @@ export class UserList {
     ];
 
     createUser() {
-        this.router.navigate(['/users/new']);
+        this.router.navigate(['/usuarios/nuevo']);
     }
 
 
