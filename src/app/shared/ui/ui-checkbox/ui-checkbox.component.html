@@ -1,0 +1,26 @@
+<div [class]="containerClasses">
+  <label class="inline-flex items-start gap-2">
+    <input
+      type="checkbox"
+      [id]="id"
+      [name]="name"
+      [required]="required"
+      [disabled]="isDisabled"
+      [checked]="currentValue"
+      [class]="checkboxClasses"
+      (change)="onToggle($any($event.target).checked)"
+      (blur)="onBlur()"
+    />
+
+    @if (label) {
+      <span [class]="labelClasses">
+        {{ label }}
+        @if (required) {
+          <span class="text-red-600">*</span>
+        }
+      </span>
+    }
+  </label>
+
+  <p [class]="messageClass">{{ messageText }}</p>
+</div>

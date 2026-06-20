@@ -1,0 +1,27 @@
+<div [class]="containerClasses">
+  @if (label) {
+    <label [attr.for]="id" class="text-sm font-medium text-gray-700">
+      {{ label }}
+      @if (required) {
+        <span class="text-red-600">*</span>
+      }
+    </label>
+  }
+
+  <input
+    [type]="type"
+    [id]="id"
+    [name]="name"
+    [placeholder]="placeholder"
+    [required]="required"
+    [disabled]="isDisabled"
+    [autocomplete]="autocomplete"
+    [attr.maxlength]="maxLength"
+    [value]="value ?? ''"
+    [class]="inputClasses"
+    (input)="onInput($any($event.target).value)"
+    (blur)="onBlur()"
+  />
+
+  <p [class]="messageClass">{{ messageText }}</p>
+</div>

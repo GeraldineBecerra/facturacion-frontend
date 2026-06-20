@@ -1,7 +1,6 @@
 @if (totalPages > 1) {
 <div class="bg-gray-50 px-4 py-3 rounded-xl border border-gray-200 flex items-center justify-between">
 
-
   <!-- Info de resultados -->
   <div class="text-sm text-gray-700">
     Mostrando
@@ -13,10 +12,8 @@
     resultados
   </div>
 
-
   <!-- Controles -->
   <div class="flex gap-2">
-
 
     <!-- Anterior -->
     <button
@@ -28,7 +25,6 @@
     >
       Anterior
     </button>
-
 
     <!-- Páginas -->
     @for (page of pages; track page) {
@@ -44,7 +40,6 @@
       </button>
     }
 
-
     <!-- Siguiente -->
     <button
       type="button"
@@ -56,8 +51,6 @@
       Siguiente
     </button>
 
-
   </div>
 </div>
 }
-

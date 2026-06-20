@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { UiCheckboxComponent } from '../../../shared/ui/ui-checkbox/ui-checkbox.component';
+import { UiInputComponent } from '../../../shared/ui/ui-input/ui-input.component';
 
 /** Campos alineados con `EmpresaEntity` del backend (JSON típico en camelCase). */
 export interface EmpresaFormModel {
@@ -26,7 +28,7 @@ export interface EmpresaFormModel {
 @Component({
     selector: 'app-company-form',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, UiCheckboxComponent, UiInputComponent],
     templateUrl: './company-form.html',
     styleUrl: './company-form.scss',
 })
@@ -53,7 +55,7 @@ export class CompanyForm {
     constructor(private router: Router) {}
 
     cancelar() {
-        this.router.navigate(['/companies']);
+        this.router.navigate(['/empresas']);
     }
 
     guardar() {

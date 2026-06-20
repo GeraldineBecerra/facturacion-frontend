@@ -1,7 +1,10 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { DynamicTableComponent } from '../../../core/shared/components/table/table.component';
-import { PageHeaderComponent } from "../../../core/shared/components/header/page-header.component";
+import {
+    DynamicTableComponent,
+    TableColumn,
+} from '../../../shared/components/table/table';
+import { PageHeaderComponent } from '../../../shared/components/header/page-header.component';
 
 @Component({
     selector: 'app-companies',
@@ -13,12 +16,20 @@ export class CompaniesList {
 
     constructor(private router: Router) {}
 
-    columns = [
+    columns: TableColumn[] = [
         { key: 'id', label: 'ID' },
         { key: 'rut', label: 'RUT' },
         { key: 'name', label: 'Razón Social' },
         { key: 'giro', label: 'Giro' },
-        { key: 'status', label: 'Status' }
+        {
+            key: 'status',
+            label: 'Estado',
+            type: 'badge',
+            badgeColors: {
+                Active: 'bg-emerald-100 text-emerald-800',
+                Verified: 'bg-blue-100 text-blue-800',
+            },
+        },
     ];
 
     data = [
@@ -39,6 +50,6 @@ export class CompaniesList {
     ];
     
     createCompany() {
-        this.router.navigate(['/companies/new']);
+        this.router.navigate(['/empresas/nueva']);
     }
 }

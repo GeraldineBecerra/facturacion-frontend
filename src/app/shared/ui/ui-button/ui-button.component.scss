@@ -1,0 +1,50 @@
+:host {
+  display: inline-flex;
+}
+
+:host:has(.ui-button--full) {
+  display: flex;
+  width: 100%;
+}
+
+.ui-button {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-all;
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2;
+  @apply disabled:cursor-not-allowed disabled:opacity-60;
+}
+
+.ui-button--sm {
+  @apply px-3 py-1.5 text-xs;
+}
+
+.ui-button--md {
+  @apply px-4 py-2.5 text-sm;
+}
+
+.ui-button--lg {
+  @apply px-8 py-3 text-sm;
+}
+
+.ui-button--full {
+  @apply w-full;
+}
+
+.ui-button--primary {
+  @apply bg-blue-600 text-white shadow-sm hover:bg-blue-700 active:scale-95 focus-visible:ring-blue-500;
+}
+
+.ui-button--secondary {
+  @apply border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 focus-visible:ring-slate-400;
+}
+
+.ui-button--danger {
+  @apply bg-red-600 text-white shadow-sm hover:bg-red-700 active:scale-95 focus-visible:ring-red-500;
+}
+
+.ui-button--ghost {
+  @apply bg-transparent text-slate-600 hover:bg-slate-100 focus-visible:ring-slate-400;
+}
+
+.ui-button__spinner {
+  @apply h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent;
+}
