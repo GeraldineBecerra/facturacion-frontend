@@ -1,6 +1,10 @@
 import { Routes } from '@angular/router';
 import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
 import { UserForm } from './features/user/user-form/user-form';
+import { BillingForm } from './features/billing/billing-form/billing-form';
+import { BillingList } from './features/billing/billing-list/billing-list';
+import { CustomersForm } from './features/customers/customers-form/customers-form';
+import { CustomersList } from './features/customers/customers-list/customers-list';
 
 export const routes: Routes = [
 
@@ -38,6 +42,22 @@ export const routes: Routes = [
                 loadComponent: () =>
                     import('./features/company/company-form/company-form')
                         .then(m => m.CompanyForm)
+            },
+            {
+                path: 'facturacion',
+                component: BillingList
+            },
+            {
+                path: 'facturacion/nueva',
+                component: BillingForm
+            },
+            {
+                path: 'clientes',
+                component: CustomersList
+            },
+            {
+                path: 'clientes/nuevo',
+                component: CustomersForm
             }
 
         ]

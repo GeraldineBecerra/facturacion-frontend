@@ -1,0 +1,64 @@
+<div class="customers-page">
+  <app-page-header
+    headerTitle="Gestión de Clientes"
+    subtitle="Administra y organiza el portafolio de clientes."
+    buttonLabel="Nuevo Cliente"
+    (buttonClick)="createCustomer()"
+  />
+
+  <section class="filters">
+    <ui-input
+      name="search"
+      label="Buscar cliente"
+      placeholder="RUT, razón social o nombre corto"
+      [(ngModel)]="filters.search"
+    />
+
+    <div class="select-field">
+      <label for="tipo">Tipo</label>
+      <select id="tipo" name="tipo" [(ngModel)]="filters.type">
+        <option value="">Todos</option>
+        <option value="Corporativo">Corporativo</option>
+        <option value="Persona">Persona</option>
+        <option value="Gubernamental">Gubernamental</option>
+      </select>
+    </div>
+
+    <div class="filter-actions">
+      <ui-button variant="secondary" (clicked)="clearFilters()">Limpiar</ui-button>
+      <ui-button (clicked)="search()">Filtrar</ui-button>
+    </div>
+  </section>
+
+  <section class="table-card">
+    <div class="table-heading">
+      <div>
+        <h2>Clientes registrados</h2>
+        <p>{{ filteredCustomers.length }} clientes encontrados</p>
+      </div>
+    </div>
+
+    <app-table
+      [columns]="columns"
+      [data]="filteredCustomers"
+      [actions]="actions"
+      [totalItems]="filteredCustomers.length"
+      [showPagination]="false"
+    />
+  </section>
+
+  <section class="metrics">
+    <article>
+      <span>Nuevos este mes</span>
+      <strong>+12%</strong>
+    </article>
+    <article>
+      <span>Total corporativos</span>
+      <strong>{{ corporateCustomers }}</strong>
+    </article>
+    <article>
+      <span>Actividad reciente</span>
+      <strong>24h</strong>
+    </article>
+  </section>
+</div>

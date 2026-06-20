@@ -3,10 +3,7 @@ import {
   EventEmitter,
   Input,
   Output,
-  OnInit,
-  ChangeDetectionStrategy,
   Injector,
-  ChangeDetectorRef,
   forwardRef,
 } from '@angular/core';
 import { AbstractControl, ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl } from '@angular/forms';
@@ -20,7 +17,6 @@ type UiAppearance = 'default' | 'compact';
   standalone: true,
   templateUrl: './ui-checkbox.component.html',
   styleUrls: ['./ui-checkbox.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -29,7 +25,7 @@ type UiAppearance = 'default' | 'compact';
     },
   ],
 })
-export class UiCheckboxComponent implements ControlValueAccessor, OnInit {
+export class UiCheckboxComponent implements ControlValueAccessor {
   @Input() label?: string;
   @Input() placeholder?: string;
   @Input() helperText?: string;
@@ -52,14 +48,7 @@ export class UiCheckboxComponent implements ControlValueAccessor, OnInit {
   private onChange: (value: boolean) => void = () => {};
   private onTouched: () => void = () => {};
 
-  constructor(private injector: Injector, private cdr: ChangeDetectorRef) {}
-
-  ngOnInit() {
-    const ngControl = this.ngControl;
-    if (ngControl) {
-      ngControl.valueAccessor = this;
-    }
-  }
+  constructor(private injector: Injector) {}
 
   get ngControl(): NgControl | null {
     try {
@@ -132,7 +121,6 @@ export class UiCheckboxComponent implements ControlValueAccessor, OnInit {
 
   writeValue(value: boolean): void {
     this.checked = !!value;
-    this.cdr.markForCheck();
   }
 
   registerOnChange(fn: (value: boolean) => void): void {

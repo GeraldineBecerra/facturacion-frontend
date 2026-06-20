@@ -1,0 +1,19 @@
+.customers-page { min-height: 100%; padding: 2.5rem; background: rgb(241 245 249 / .8); }
+.filters, .table-card { padding: 1.5rem; border: 1px solid #e2e8f0; border-radius: 1rem; background: white; box-shadow: 0 1px 2px rgb(15 23 42 / .05); }
+.filters { display: grid; grid-template-columns: minmax(0, 1fr) 14rem auto; align-items: end; gap: 1rem; margin-bottom: 2rem; }
+.select-field { display: flex; flex-direction: column; gap: .25rem; }
+.select-field label { color: #374151; font-size: .875rem; font-weight: 500; }
+.select-field select { width: 100%; padding: .5rem .75rem; border: 1px solid #d1d5db; border-radius: .5rem; font-size: .875rem; }
+.filter-actions { display: flex; gap: .75rem; padding-bottom: 1rem; }
+.table-heading { margin-bottom: 1.25rem; }
+.table-heading h2 { color: #1e293b; font-size: 1.125rem; font-weight: 700; }
+.table-heading p { margin-top: .25rem; color: #64748b; font-size: .875rem; }
+.metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 2rem; }
+.metrics article { padding: 1.5rem; border-radius: 1rem; background: white; box-shadow: 0 1px 2px rgb(15 23 42 / .05); }
+.metrics span { display: block; color: #64748b; font-size: .75rem; font-weight: 700; text-transform: uppercase; }
+.metrics strong { display: block; margin-top: .35rem; color: #1e3a8a; font-size: 1.5rem; }
+@media (max-width: 850px) {
+  .filters { grid-template-columns: 1fr; }
+  .filter-actions { padding-bottom: 0; }
+  .metrics { grid-template-columns: 1fr; }
+}
