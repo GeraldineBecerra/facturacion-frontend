@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { PageHeaderComponent } from '../../../shared/components/header/page-header.component';
+import { PageHeaderComponent } from '../../../../shared/components/header/page-header.component';
 import {
   DynamicTableComponent,
   TableAction,
   TableColumn,
-} from '../../../shared/components/table/table';
-import { UiButtonComponent } from '../../../shared/ui/ui-button/ui-button.component';
-import { UiInputComponent } from '../../../shared/ui/ui-input/ui-input.component';
+} from '../../../../shared/components/table/table';
+import { UiButtonComponent } from '../../../../shared/ui/ui-button/ui-button.component';
+import { UiInputComponent } from '../../../../shared/ui/ui-input/ui-input.component';
 
 interface Customer {
   id: number;

@@ -1,10 +1,13 @@
 import { Routes } from '@angular/router';
 import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
-import { UserForm } from './features/user/user-form/user-form';
-import { BillingForm } from './features/billing/billing-form/billing-form';
-import { BillingList } from './features/billing/billing-list/billing-list';
-import { CustomersForm } from './features/customers/customers-form/customers-form';
-import { CustomersList } from './features/customers/customers-list/customers-list';
+import { UserForm } from './features/user/pages/user-form/user-form';
+import { UserList } from './features/user/pages/user-list/user-list';
+import { CompanyForm } from './features/company/pages/company-form/company-form';
+import { CompaniesList } from './features/company/pages/company-list/company-list';
+import { BillingForm } from './features/billing/pages/billing-form/billing-form';
+import { BillingList } from './features/billing/pages/billing-list/billing-list';
+import { CustomersForm } from './features/customers/pages/customers-form/customers-form';
+import { CustomersList } from './features/customers/pages/customers-list/customers-list';
 
 export const routes: Routes = [
 
@@ -13,18 +16,9 @@ export const routes: Routes = [
         component: MainLayoutComponent,
         children: [
 
-            // {
-            //     path: 'dashboard',
-            //     loadComponent: () =>
-            //         import('./pages/dashboard/dashboard.component')
-            //             .then(m => m.DashboardComponent)
-            // },
-
             {
                 path: 'usuarios',
-                loadComponent: () =>
-                    import('./features/user/user-list/user-list')
-                        .then(m => m.UserList)
+                component: UserList
             },
             {
                 path: 'usuarios/nuevo',
@@ -33,15 +27,11 @@ export const routes: Routes = [
 
             {
                 path: 'empresas',
-                loadComponent: () =>
-                    import('./features/company/company-list/company-list')
-                        .then(m => m.CompaniesList)
+                component: CompaniesList
             },
             {
                 path: 'empresas/nueva',
-                loadComponent: () =>
-                    import('./features/company/company-form/company-form')
-                        .then(m => m.CompanyForm)
+                component: CompanyForm
             },
             {
                 path: 'facturacion',

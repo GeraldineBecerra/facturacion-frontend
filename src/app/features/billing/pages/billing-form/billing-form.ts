@@ -2,10 +2,10 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { PageHeaderComponent } from '../../../shared/components/header/page-header.component';
-import { UiButtonComponent } from '../../../shared/ui/ui-button/ui-button.component';
-import { UiCheckboxComponent } from '../../../shared/ui/ui-checkbox/ui-checkbox.component';
-import { UiInputComponent } from '../../../shared/ui/ui-input/ui-input.component';
+import { PageHeaderComponent } from '../../../../shared/components/header/page-header.component';
+import { UiButtonComponent } from '../../../../shared/ui/ui-button/ui-button.component';
+import { UiCheckboxComponent } from '../../../../shared/ui/ui-checkbox/ui-checkbox.component';
+import { UiInputComponent } from '../../../../shared/ui/ui-input/ui-input.component';
 
 interface BillingFormModel {
   tipoDocumento: string;
