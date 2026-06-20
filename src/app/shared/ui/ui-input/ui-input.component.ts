@@ -1,10 +1,7 @@
 import {
   Component,
   Input,
-  OnInit,
-  ChangeDetectionStrategy,
   Injector,
-  ChangeDetectorRef,
   forwardRef,
 } from '@angular/core';
 import { AbstractControl, ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl } from '@angular/forms';
@@ -18,7 +15,6 @@ type UiAppearance = 'default' | 'compact';
   standalone: true,
   templateUrl: './ui-input.component.html',
   styleUrls: ['./ui-input.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -27,7 +23,7 @@ type UiAppearance = 'default' | 'compact';
     },
   ],
 })
-export class UiInputComponent implements ControlValueAccessor, OnInit {
+export class UiInputComponent implements ControlValueAccessor {
   @Input() label?: string;
   @Input() placeholder?: string;
   @Input() helperText?: string;
@@ -51,21 +47,13 @@ export class UiInputComponent implements ControlValueAccessor, OnInit {
   private onChange: (value: string | number | null) => void = () => {};
   private onTouched: () => void = () => {};
 
-  constructor(private injector: Injector, private cdr: ChangeDetectorRef) {
-    // Use injector to lazily get NgControl to avoid circular dependencies
-  }
+  constructor(private injector: Injector) {}
 
   get ngControl(): NgControl | null {
     try {
       return this.injector.get(NgControl, null);
     } catch {
       return null;
-    }
-  }
-
-  ngOnInit() {
-    if (this.ngControl) {
-      this.ngControl.valueAccessor = this;
     }
   }
 
@@ -138,7 +126,6 @@ export class UiInputComponent implements ControlValueAccessor, OnInit {
 
   writeValue(value: string | number | null): void {
     this.value = value;
-    this.cdr.markForCheck();
   }
 
   registerOnChange(fn: (value: string | number | null) => void): void {

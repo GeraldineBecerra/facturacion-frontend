@@ -1,0 +1,237 @@
+.billing-page {
+  @apply min-h-full space-y-8 bg-slate-100/80 p-6 md:p-10;
+}
+
+.filters,
+.table-section {
+  @apply rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:p-6;
+}
+
+.section-title {
+  @apply text-lg font-bold text-slate-800;
+}
+
+.section-description {
+  @apply mt-1 text-sm text-slate-500;
+}
+
+.filter-grid {
+  @apply mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4;
+}
+
+.filter-field {
+  @apply flex flex-col gap-1;
+
+  label {
+    @apply text-sm font-medium text-gray-700;
+  }
+
+  select {
+    @apply w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none transition;
+    @apply focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+  }
+}
+
+.filter-actions {
+  @apply mt-4 flex justify-end gap-3;
+}
+
+.table-heading {
+  @apply mb-5 flex items-center justify-between;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(17rem, 1fr);
+  gap: 1.5rem;
+}
+
+.summary-card,
+.sii-card {
+  border-radius: 1rem;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.05);
+}
+
+.summary-card {
+  padding: 2rem;
+  border: 1px solid #e2e8f0;
+  background: white;
+}
+
+.summary-heading,
+.summary-stats,
+.sii-title,
+.sii-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.summary-total {
+  text-align: right;
+}
+
+.summary-total strong {
+  display: block;
+  color: #1d4ed8;
+  font-size: 1.75rem;
+}
+
+.summary-total span {
+  color: #059669;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.summary-stats {
+  margin: 1.5rem 0;
+  justify-content: flex-start;
+}
+
+.summary-stats div {
+  min-width: 7rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  background: #f8fafc;
+}
+
+.summary-stats span,
+.last-sync span {
+  display: block;
+  color: #64748b;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+.summary-stats strong {
+  color: #0f172a;
+  font-size: 1.25rem;
+}
+
+.chart {
+  display: grid;
+  height: 11rem;
+  grid-template-columns: repeat(7, 1fr);
+  align-items: end;
+  gap: 0.75rem;
+}
+
+.chart-column {
+  display: grid;
+  height: 100%;
+  grid-template-rows: 1fr auto;
+  gap: 0.5rem;
+  text-align: center;
+}
+
+.chart-track {
+  display: flex;
+  align-items: end;
+  overflow: hidden;
+  border-radius: 0.5rem 0.5rem 0 0;
+  background: #eff6ff;
+}
+
+.chart-bar {
+  width: 100%;
+  min-height: 0.5rem;
+  border-radius: 0.5rem 0.5rem 0 0;
+  background: linear-gradient(#3b82f6, #1d4ed8);
+}
+
+.chart-column span {
+  color: #64748b;
+  font-size: 0.75rem;
+}
+
+.sii-card {
+  display: flex;
+  padding: 2rem;
+  flex-direction: column;
+  justify-content: space-between;
+  background: linear-gradient(145deg, #1e3a8a, #2563eb);
+  color: white;
+}
+
+.sii-title {
+  justify-content: flex-start;
+}
+
+.sii-title h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.sii-status {
+  margin-top: 2rem;
+  font-size: 0.875rem;
+}
+
+.sii-status strong {
+  padding: 0.25rem 0.75rem;
+  border: 1px solid rgb(134 239 172 / 0.35);
+  border-radius: 999px;
+  background: rgb(34 197 94 / 0.2);
+  color: #bbf7d0;
+  font-size: 0.75rem;
+}
+
+.progress-track {
+  height: 0.5rem;
+  margin: 1rem 0;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.15);
+}
+
+.progress-value {
+  width: 95%;
+  height: 100%;
+  border-radius: inherit;
+  background: white;
+}
+
+.sii-card p {
+  color: rgb(255 255 255 / 0.7);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.last-sync {
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgb(255 255 255 / 0.15);
+}
+
+.last-sync span {
+  color: rgb(255 255 255 / 0.65);
+}
+
+.last-sync strong {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 1.25rem;
+}
+
+@media (max-width: 900px) {
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .summary-heading,
+  .summary-stats {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .summary-total {
+    text-align: left;
+  }
+
+  .chart {
+    gap: 0.35rem;
+  }
+}

@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { UiCheckboxComponent } from '../../../shared/ui/ui-checkbox/ui-checkbox.component';
-import { UiInputComponent } from '../../../shared/ui/ui-input/ui-input.component';
+import { UiCheckboxComponent } from '../../../../shared/ui/ui-checkbox/ui-checkbox.component';
+import { UiInputComponent } from '../../../../shared/ui/ui-input/ui-input.component';
 
 /** Campos alineados con `EmpresaEntity` del backend (JSON típico en camelCase). */
 export interface EmpresaFormModel {

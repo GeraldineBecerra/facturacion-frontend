@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { PageHeaderComponent } from '../../../shared/components/header/page-header.component';
+import { PageHeaderComponent } from '../../../../shared/components/header/page-header.component';
 import {
     DynamicTableComponent,
     TableAction,
     TableColumn,
-} from '../../../shared/components/table/table';
+} from '../../../../shared/components/table/table';
 import { Router } from '@angular/router';
 
 @Component({

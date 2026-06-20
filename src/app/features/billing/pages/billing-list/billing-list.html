@@ -1,0 +1,122 @@
+<div class="billing-page">
+  <app-page-header
+    headerTitle="Facturación"
+    subtitle="Administra los documentos tributarios emitidos y recibidos."
+    buttonLabel="Nueva Factura"
+    (buttonClick)="createBilling()"
+  />
+
+  <section class="filters">
+    <div>
+      <h2 class="section-title">Filtros de búsqueda</h2>
+      <p class="section-description">Busca por folio, emisor o estado del documento.</p>
+    </div>
+
+    <div class="filter-grid">
+      <ui-input name="folio" label="Folio" placeholder="Ej. 12345" [(ngModel)]="filters.folio" />
+      <ui-input name="rutEmisor" label="RUT emisor" placeholder="12.345.678-9"
+        [(ngModel)]="filters.rutEmisor" />
+      <ui-input name="razonSocial" label="Razón social" placeholder="Nombre de empresa"
+        [(ngModel)]="filters.razonSocial" />
+
+      <div class="filter-field">
+        <label for="estado">Estado</label>
+        <select id="estado" name="estado" [(ngModel)]="filters.estado">
+          <option value="">Todos</option>
+          <option value="Pendiente">Pendiente</option>
+          <option value="Aceptada">Aceptada</option>
+          <option value="Reclamada">Reclamada</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="filter-actions">
+      <ui-button variant="secondary" (clicked)="clearFilters()">Limpiar</ui-button>
+      <ui-button (clicked)="search()">Buscar</ui-button>
+    </div>
+  </section>
+
+  <section class="table-section">
+    <div class="table-heading">
+      <div>
+        <h2 class="section-title">Documentos tributarios</h2>
+        <p class="section-description">{{ filteredDocuments.length }} documentos encontrados</p>
+      </div>
+    </div>
+
+    <app-table
+      [columns]="columns"
+      [data]="filteredDocuments"
+      [actions]="actions"
+      [totalItems]="filteredDocuments.length"
+      [showPagination]="false"
+    />
+  </section>
+
+  <section class="summary-grid">
+    <article class="summary-card">
+      <div class="summary-heading">
+        <div>
+          <h2 class="section-title">Resumen de facturación recibida</h2>
+          <p class="section-description">Análisis de los documentos registrados en el período.</p>
+        </div>
+
+        <div class="summary-total">
+          <strong>{{ receivedTotal | currency:'CLP':'symbol-narrow':'1.0-0':'es-CL' }}</strong>
+          <span>+12,5% respecto al período anterior</span>
+        </div>
+      </div>
+
+      <div class="summary-stats">
+        <div>
+          <span>Documentos</span>
+          <strong>{{ documents.length }}</strong>
+        </div>
+        <div>
+          <span>Aceptados</span>
+          <strong>{{ acceptedDocuments }}</strong>
+        </div>
+        <div>
+          <span>Pendientes</span>
+          <strong>{{ pendingDocuments }}</strong>
+        </div>
+      </div>
+
+      <div class="chart" aria-label="Resumen mensual de facturación">
+        @for (item of monthlySummary; track item.label) {
+          <div class="chart-column">
+            <div class="chart-track">
+              <div class="chart-bar" [style.height.%]="item.value"></div>
+            </div>
+            <span>{{ item.label }}</span>
+          </div>
+        }
+      </div>
+    </article>
+
+    <article class="sii-card">
+      <div>
+        <div class="sii-title">
+          <span class="material-symbols-outlined">cloud_done</span>
+          <h2>Estado SII</h2>
+        </div>
+
+        <div class="sii-status">
+          <span>Conectividad de API</span>
+          <strong>Activa</strong>
+        </div>
+
+        <div class="progress-track">
+          <div class="progress-value"></div>
+        </div>
+
+        <p>La sincronización automática de documentos funciona sin errores.</p>
+      </div>
+
+      <div class="last-sync">
+        <span>Última sincronización exitosa</span>
+        <strong>Hoy, 14:22</strong>
+      </div>
+    </article>
+  </section>
+</div>

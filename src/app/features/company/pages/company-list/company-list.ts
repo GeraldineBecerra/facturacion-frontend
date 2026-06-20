@@ -3,8 +3,8 @@ import { Router } from '@angular/router';
 import {
     DynamicTableComponent,
     TableColumn,
-} from '../../../shared/components/table/table';
-import { PageHeaderComponent } from '../../../shared/components/header/page-header.component';
+} from '../../../../shared/components/table/table';
+import { PageHeaderComponent } from '../../../../shared/components/header/page-header.component';
 
 @Component({
     selector: 'app-companies',
