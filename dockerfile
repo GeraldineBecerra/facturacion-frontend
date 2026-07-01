@@ -13,7 +13,7 @@ RUN npx ng build --configuration production
 # ===== STAGE 2: NGINX SERVER =====
 FROM nginx:alpine
 
-# CORREGIR ESTA LÍNEA
+
 COPY --from=build /app/dist/facturacion-frontend/browser/ /usr/share/nginx/html/
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf
