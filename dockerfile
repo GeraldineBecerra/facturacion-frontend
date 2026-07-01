@@ -1,25 +1,26 @@
-# Build stage
+# ===== STAGE 1: BUILD ANGULAR =====
 FROM node:20 AS build
 
 WORKDIR /app
 
+# Copiar dependencias
 COPY package*.json ./
 RUN npm install
 
+# Copiar código fuente
 COPY . .
 
-RUN npm run build --configuration production
+# Build correcto Angular
+RUN npx ng build --configuration production
 
 
-# Serve stage
+# ===== STAGE 2: NGINX SERVER =====
 FROM nginx:alpine
 
-WORKDIR /usr/share/nginx/html
+# Copiar build generado de Angular
+COPY --from=build /app/dist/ /usr/share/nginx/html
 
-# Copia build de Angular (IMPORTANTE el path correcto)
-COPY --from=build /app/dist/ ./
-
-# Config nginx para SPA
+# Configuración SPA (routing Angular)
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
