@@ -1,10 +1,17 @@
 <div class="customer-form-page">
   <app-page-header
-    headerTitle="Nuevo Cliente"
+    [headerTitle]="isEditMode ? 'Editar Cliente' : 'Nuevo Cliente'"
     subtitle="Registra los datos comerciales, contactos y canales de cobranza."
   />
 
-  <form class="customer-form" (ngSubmit)="saveCustomer()">
+  @if (error) {
+    <div class="error-message">{{ error }}</div>
+  }
+
+  @if (isLoading) {
+    <div class="loading-message">Cargando cliente...</div>
+  } @else {
+  <form #customerForm="ngForm" class="customer-form" (ngSubmit)="saveCustomer(customerForm)">
     <section class="form-card">
       <h2 class="section-title">Datos del cliente</h2>
 
@@ -92,7 +99,10 @@
       <ui-button type="button" variant="secondary" size="lg" (clicked)="cancel()">
         Cancelar
       </ui-button>
-      <ui-button type="submit" size="lg">Guardar cliente</ui-button>
+      <ui-button type="submit" size="lg" [loading]="isSaving">
+        {{ isEditMode ? 'Actualizar cliente' : 'Guardar cliente' }}
+      </ui-button>
     </div>
   </form>
+  }
 </div>

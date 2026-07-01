@@ -1,0 +1,211 @@
+<div class="profile-page">
+  <app-page-header
+    headerTitle="Perfil"
+    subtitle="Información de tu cuenta y de la empresa asociada a la sesión."
+  />
+
+  @if (isLoading) {
+    <section class="state-card">
+      <div class="spinner"></div>
+      <p>Cargando perfil...</p>
+    </section>
+  } @else if (error) {
+    <section class="state-card error">
+      <span class="material-symbols-outlined">error</span>
+      <p>{{ error }}</p>
+      <button type="button" (click)="loadCompany()">Reintentar</button>
+    </section>
+  } @else if (isGlobalSession) {
+    <section class="identity-card">
+      <div class="company-avatar">SA</div>
+      <div class="identity-copy">
+        <span class="eyebrow">Cuenta global</span>
+        <h2>{{ auth.username() }}</h2>
+        <p>Superadministrador del sistema, sin empresa asociada.</p>
+      </div>
+      <span class="status">Acceso global</span>
+    </section>
+
+    <div class="content-grid">
+      <section class="card session-card">
+        <div class="section-heading">
+          <span class="icon-box">
+            <span class="material-symbols-outlined">admin_panel_settings</span>
+          </span>
+          <div>
+            <h3>Tu sesión</h3>
+            <p>Cuenta raíz actualmente autenticada.</p>
+          </div>
+        </div>
+
+        <dl class="session-details">
+          <div><dt>Usuario</dt><dd>{{ auth.username() }}</dd></div>
+          <div><dt>Rol</dt><dd><span class="role-badge">{{ roleLabel }}</span></dd></div>
+          <div><dt>Empresa</dt><dd>No aplica</dd></div>
+        </dl>
+      </section>
+
+      <section class="card">
+        <div class="section-heading">
+          <span class="icon-box">
+            <span class="material-symbols-outlined">domain</span>
+          </span>
+          <div>
+            <h3>Alcance de la cuenta</h3>
+            <p>Este usuario administra el sistema completo.</p>
+          </div>
+        </div>
+        <p class="global-description">
+          La cuenta raíz no pertenece a una empresa específica. Puede administrar empresas,
+          roles y configuraciones globales.
+        </p>
+      </section>
+    </div>
+  } @else if (company) {
+    <section class="identity-card">
+      <div class="company-avatar">
+        @if (logoPreviewUrl) {
+          <img [src]="logoPreviewUrl" alt="Logo de empresa" />
+        } @else {
+          {{ companyInitials }}
+        }
+      </div>
+      <div class="identity-copy">
+        <span class="eyebrow">Empresa activa</span>
+        <h2>{{ company.nombreFantasia || company.razonSocial }}</h2>
+        <p>{{ company.razonSocial }}</p>
+      </div>
+      <span class="status" [class.inactive]="!company.activo">
+        {{ company.activo ? 'Activa' : 'Inactiva' }}
+      </span>
+    </section>
+
+    <div class="content-grid">
+      <section class="card">
+        <div class="section-heading">
+          <span class="icon-box">
+            <span class="material-symbols-outlined">image</span>
+          </span>
+          <div>
+            <h3>Logo de empresa</h3>
+            <p>Se imprimirá automáticamente en el PDF de la factura.</p>
+          </div>
+        </div>
+
+        <div class="logo-manager">
+          <div class="logo-large-preview">
+            @if (logoPreviewUrl) {
+              <img [src]="logoPreviewUrl" alt="Logo de empresa" />
+            } @else {
+              <span class="material-symbols-outlined">add_photo_alternate</span>
+            }
+          </div>
+          <div class="logo-manager-actions">
+            <p>PNG o JPG, máximo 1 MB.</p>
+            <div class="logo-buttons">
+              <label class="logo-file-button" for="profileLogo">
+                {{ logoPreviewUrl ? 'Cambiar logo' : 'Subir logo' }}
+              </label>
+              <input id="profileLogo" type="file" accept="image/png,image/jpeg"
+                [disabled]="isUploadingLogo || isDeletingLogo" (change)="onLogoSelected($event)" />
+              @if (logoPreviewUrl) {
+                <ui-button type="button" variant="danger" size="sm"
+                  [loading]="isDeletingLogo" (clicked)="deleteLogo()">
+                  Eliminar
+                </ui-button>
+              }
+            </div>
+            @if (isUploadingLogo) {
+              <span class="logo-help">Subiendo logo...</span>
+            }
+            @if (logoSuccess) {
+              <span class="logo-success">{{ logoSuccess }}</span>
+            }
+            @if (logoError) {
+              <span class="logo-error">{{ logoError }}</span>
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="section-heading">
+          <span class="icon-box">
+            <span class="material-symbols-outlined">business</span>
+          </span>
+          <div>
+            <h3>Datos de la empresa</h3>
+            <p>Identificación y actividad comercial.</p>
+          </div>
+        </div>
+
+        <dl class="details-grid">
+          <div><dt>RUT</dt><dd>{{ company.rutEmpresa || '—' }}</dd></div>
+          <div><dt>Razón social</dt><dd>{{ company.razonSocial || '—' }}</dd></div>
+          <div><dt>Nombre de fantasía</dt><dd>{{ company.nombreFantasia || '—' }}</dd></div>
+          <div><dt>Giro</dt><dd>{{ company.giro || '—' }}</dd></div>
+          <div><dt>Sitio web</dt><dd>{{ company.sitioWeb || '—' }}</dd></div>
+          <div><dt>Fecha de registro</dt><dd>{{ company.createdAt | date:'dd/MM/yyyy' }}</dd></div>
+        </dl>
+      </section>
+
+      <section class="card session-card">
+        <div class="section-heading">
+          <span class="icon-box">
+            <span class="material-symbols-outlined">account_circle</span>
+          </span>
+          <div>
+            <h3>Tu sesión</h3>
+            <p>Cuenta actualmente autenticada.</p>
+          </div>
+        </div>
+
+        <dl class="session-details">
+          <div><dt>Usuario</dt><dd>{{ auth.username() }}</dd></div>
+          <div><dt>Rol</dt><dd><span class="role-badge">{{ roleLabel }}</span></dd></div>
+          <div><dt>ID empresa</dt><dd>{{ company.id }}</dd></div>
+        </dl>
+      </section>
+
+      <section class="card">
+        <div class="section-heading">
+          <span class="icon-box">
+            <span class="material-symbols-outlined">location_on</span>
+          </span>
+          <div>
+            <h3>Ubicación y contacto</h3>
+            <p>Información de contacto de la empresa.</p>
+          </div>
+        </div>
+
+        <dl class="details-grid">
+          <div class="wide"><dt>Dirección</dt><dd>{{ company.direccion || '—' }}</dd></div>
+          <div><dt>Comuna</dt><dd>{{ company.comuna || '—' }}</dd></div>
+          <div><dt>Ciudad</dt><dd>{{ company.ciudad || '—' }}</dd></div>
+          <div><dt>País</dt><dd>{{ company.pais || '—' }}</dd></div>
+          <div><dt>Teléfono</dt><dd>{{ company.telefono || '—' }}</dd></div>
+          <div><dt>Email principal</dt><dd>{{ company.emailPrincipal || '—' }}</dd></div>
+          <div><dt>Email contabilidad</dt><dd>{{ company.emailContabilidad || '—' }}</dd></div>
+        </dl>
+      </section>
+
+      <section class="card">
+        <div class="section-heading">
+          <span class="icon-box">
+            <span class="material-symbols-outlined">badge</span>
+          </span>
+          <div>
+            <h3>Representante legal</h3>
+            <p>Datos registrados del representante.</p>
+          </div>
+        </div>
+
+        <dl class="details-grid">
+          <div><dt>RUT</dt><dd>{{ company.rutRepresentante || '—' }}</dd></div>
+          <div><dt>Nombre</dt><dd>{{ company.nombreRepresentante || '—' }}</dd></div>
+          <div><dt>Teléfono</dt><dd>{{ company.telefonoRepresentante || '—' }}</dd></div>
+        </dl>
+      </section>
+    </div>
+  }
+</div>

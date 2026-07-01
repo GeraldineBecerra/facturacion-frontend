@@ -18,8 +18,10 @@
       [columns]="columns"
       [data]="users"
       [actions]="actions"
+      [isLoading]="isLoading"
+      [error]="error"
       [totalItems]="users.length"
-      [showPagination]="false"
+      (retry)="loadUsers()"
     />
   </section>
 

@@ -1,0 +1,61 @@
+<main class="login-page">
+  <section class="brand-panel">
+    <div class="brand-content">
+      <span class="brand-mark material-symbols-outlined">architecture</span>
+      <p class="eyebrow">Sistema de facturación</p>
+      <h1>DTE DIGITAL</h1>
+      <p class="brand-description">
+        Gestiona empresas, usuarios, clientes y documentos tributarios desde una plataforma segura.
+      </p>
+
+      <figure class="billing-visual" aria-label="Ilustración de facturación electrónica y DTE">
+        <img
+          src="/images/login-dte-hero.png"
+          alt="Factura electrónica conectada a validaciones, nube y paneles financieros"
+        />
+      </figure>
+    </div>
+    <div class="security-note">
+      <span class="material-symbols-outlined">verified_user</span>
+      <span>Conexión segura mediante JWT</span>
+    </div>
+  </section>
+
+  <section class="form-panel">
+    <div class="login-card">
+      <header>
+        <p class="eyebrow">Bienvenido</p>
+        <h2>Iniciar sesión</h2>
+        <p>Ingresa tus credenciales para continuar.</p>
+      </header>
+
+      @if (error) {
+        <div class="login-error">{{ error }}</div>
+      }
+
+      <form #loginForm="ngForm" (ngSubmit)="submit(loginForm)">
+        <ui-input name="username" label="Usuario" placeholder="Ingresa tu usuario"
+          autocomplete="username" [(ngModel)]="credentials.username" [required]="true" />
+
+        <div class="password-field">
+          <ui-input name="password" [type]="showPassword ? 'text' : 'password'"
+            label="Contraseña" placeholder="••••••••" autocomplete="current-password"
+            [(ngModel)]="credentials.password" [required]="true" />
+          <button type="button" class="password-toggle" (click)="togglePassword()"
+            [attr.aria-label]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+            <span class="material-symbols-outlined">
+              {{ showPassword ? 'visibility_off' : 'visibility' }}
+            </span>
+          </button>
+        </div>
+
+        <ui-checkbox name="remember" label="Recordarme" [(ngModel)]="remember" />
+
+        <ui-button type="button" size="lg" [loading]="isLoading" [fullWidth]="true"
+          (clicked)="submit(loginForm)">
+          Iniciar sesión
+        </ui-button>
+      </form>
+    </div>
+  </section>
+</main>

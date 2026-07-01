@@ -9,11 +9,11 @@
   <section class="filters">
     <div>
       <h2 class="section-title">Filtros de búsqueda</h2>
-      <p class="section-description">Busca por folio, emisor o estado del documento.</p>
+      <p class="section-description">Busca por nÃºmero de factura, emisor o estado del documento.</p>
     </div>
 
     <div class="filter-grid">
-      <ui-input name="folio" label="Folio" placeholder="Ej. 12345" [(ngModel)]="filters.folio" />
+      <ui-input name="folio" label="N° factura" placeholder="Ej. 12345" [(ngModel)]="filters.folio" />
       <ui-input name="rutEmisor" label="RUT emisor" placeholder="12.345.678-9"
         [(ngModel)]="filters.rutEmisor" />
       <ui-input name="razonSocial" label="Razón social" placeholder="Nombre de empresa"
@@ -23,9 +23,9 @@
         <label for="estado">Estado</label>
         <select id="estado" name="estado" [(ngModel)]="filters.estado">
           <option value="">Todos</option>
-          <option value="Pendiente">Pendiente</option>
-          <option value="Aceptada">Aceptada</option>
-          <option value="Reclamada">Reclamada</option>
+          <option value="BORRADOR">Borrador</option>
+          <option value="EMITIDO">Emitido</option>
+          <option value="ANULADO">Anulado</option>
         </select>
       </div>
     </div>
@@ -48,8 +48,10 @@
       [columns]="columns"
       [data]="filteredDocuments"
       [actions]="actions"
+      [isLoading]="isLoading"
+      [error]="error"
       [totalItems]="filteredDocuments.length"
-      [showPagination]="false"
+      (retry)="loadDocuments()"
     />
   </section>
 

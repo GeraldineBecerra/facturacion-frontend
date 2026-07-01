@@ -1,0 +1,39 @@
+.selector-page { min-height: 100vh; background: #f1f5f9; }
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 4.5rem; padding: .75rem 2rem; border-bottom: 1px solid #e2e8f0; background: white; }
+.brand, .account { display: flex; align-items: center; gap: .75rem; }
+.brand-icon { display: grid; width: 2.75rem; height: 2.75rem; place-items: center; border-radius: .8rem; color: white; background: linear-gradient(135deg, #2563eb, #4f46e5); }
+.brand div, .account div { display: flex; flex-direction: column; }
+.brand strong, .account strong { color: #0f172a; font-size: .9rem; }
+.brand span:not(.brand-icon), .account span { color: #64748b; font-size: .72rem; }
+.account { text-align: right; }
+.selector-content { width: min(72rem, calc(100% - 2rem)); margin: 0 auto; padding: 4rem 0; }
+.intro { max-width: 42rem; margin: 0 auto 2rem; text-align: center; }
+.eyebrow { color: #2563eb; font-size: .72rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.intro h1 { margin-top: .6rem; color: #0f172a; font-size: clamp(2rem, 5vw, 3rem); font-weight: 850; letter-spacing: -.04em; }
+.intro p { margin-top: .75rem; color: #64748b; line-height: 1.6; }
+.search-card { max-width: 42rem; margin: 0 auto 2rem; padding: 1.25rem; border: 1px solid #e2e8f0; border-radius: 1rem; background: white; box-shadow: 0 1px 2px rgb(15 23 42 / .05); }
+.company-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; }
+.company-card { position: relative; display: flex; min-height: 19rem; flex-direction: column; align-items: flex-start; padding: 1.5rem; border: 1px solid #e2e8f0; border-radius: 1rem; background: white; text-align: left; box-shadow: 0 1px 2px rgb(15 23 42 / .05); transition: transform .2s, border-color .2s, box-shadow .2s; }
+.company-card:hover { transform: translateY(-3px); border-color: #93c5fd; box-shadow: 0 12px 28px rgb(15 23 42 / .1); }
+.company-icon { display: grid; width: 3rem; height: 3rem; place-items: center; border-radius: .8rem; color: #2563eb; background: #eff6ff; }
+.company-copy { width: 100%; margin-top: 1.25rem; }
+.status-dot { color: #15803d; font-size: .68rem; font-weight: 750; letter-spacing: .05em; text-transform: uppercase; }
+.company-copy h2 { margin-top: .35rem; color: #0f172a; font-size: 1.15rem; font-weight: 800; }
+.company-copy > p { min-height: 2.5rem; margin-top: .3rem; color: #64748b; font-size: .82rem; }
+.company-copy dl { display: grid; gap: .65rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #f1f5f9; }
+.company-copy dl div { display: flex; justify-content: space-between; gap: 1rem; }
+.company-copy dt { color: #94a3b8; font-size: .7rem; font-weight: 700; text-transform: uppercase; }
+.company-copy dd { color: #334155; font-size: .78rem; font-weight: 650; }
+.select-action { display: flex; align-items: center; gap: .35rem; margin-top: auto; padding-top: 1rem; color: #2563eb; font-size: .85rem; font-weight: 750; }
+.select-action .material-symbols-outlined { font-size: 1.1rem; }
+.state-card { display: flex; min-height: 15rem; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; border: 1px solid #e2e8f0; border-radius: 1rem; color: #64748b; background: white; }
+.state-card.error { color: #b91c1c; }
+.spinner { width: 2rem; height: 2rem; border: 2px solid #bfdbfe; border-top-color: #2563eb; border-radius: 50%; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (max-width: 900px) { .company-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 620px) {
+  .topbar { padding: .75rem 1rem; }
+  .account div { display: none; }
+  .selector-content { padding: 2.5rem 0; }
+  .company-grid { grid-template-columns: 1fr; }
+}

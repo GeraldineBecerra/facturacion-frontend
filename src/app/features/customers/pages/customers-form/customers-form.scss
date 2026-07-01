@@ -21,3 +21,17 @@
   .form-card { padding: 1.5rem; }
   .actions { flex-direction: column; }
 }
+.error-message {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border: 1px solid #fecaca;
+  border-radius: .75rem;
+  color: #b91c1c;
+  background: #fef2f2;
+}
+
+.loading-message {
+  padding: 4rem;
+  color: #64748b;
+  text-align: center;
+}

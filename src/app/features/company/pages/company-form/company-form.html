@@ -1,15 +1,22 @@
 <div class="max-w-5xl mx-auto pb-8">
   <header class="mb-8">
     <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 mb-2">
-      Nueva empresa
+      {{ isEditMode ? 'Editar empresa' : 'Nueva empresa' }}
     </h1>
     <p class="text-slate-600 max-w-2xl">
-      Registra una nueva empresa en el sistema
+      {{ isEditMode ? 'Actualiza los datos de la empresa' : 'Registra una nueva empresa en el sistema' }}
     </p>
   </header>
 
   <div class="card">
-    <form (ngSubmit)="guardar()" class="space-y-8">
+    @if (error) {
+      <div class="error-message">{{ error }}</div>
+    }
+
+    @if (isLoading) {
+      <div class="loading-message">Cargando empresa...</div>
+    } @else {
+    <form #companyForm="ngForm" (ngSubmit)="guardar(companyForm)" class="space-y-8">
       <!-- Identificación -->
       <section>
         <div class="section-header">
@@ -48,6 +55,41 @@
                 <span class="text-xs text-slate-500">Por defecto activa</span>
               </div>
               <ui-checkbox name="activo" label="Activa" [(ngModel)]="empresa.activo" [fullWidth]="false" />
+            </div>
+          </div>
+
+          <div class="form-field md:col-span-2">
+            <label for="logoEmpresa">Logo de empresa</label>
+            <div class="logo-uploader">
+              <div class="logo-preview">
+                @if (logoPreviewUrl) {
+                  <img [src]="logoPreviewUrl" alt="Logo de empresa" />
+                } @else {
+                  <span class="material-symbols-outlined">image</span>
+                }
+              </div>
+              <div class="logo-actions">
+                <p>PNG o JPG, máximo 1 MB. Se imprimirá automáticamente en el PDF de la factura.</p>
+                <div class="logo-buttons">
+                  <label class="logo-file-button" for="logoEmpresa">
+                    Seleccionar logo
+                  </label>
+                  <input id="logoEmpresa" type="file" accept="image/png,image/jpeg"
+                    (change)="onLogoSelected($event)" />
+                  @if (logoPreviewUrl || hasLogo) {
+                    <button type="button" class="logo-delete-button"
+                      [disabled]="isDeletingLogo" (click)="eliminarLogo()">
+                      {{ isDeletingLogo ? 'Eliminando...' : 'Eliminar logo' }}
+                    </button>
+                  }
+                </div>
+                @if (logoFile) {
+                  <span class="logo-file-name">{{ logoFile.name }}</span>
+                }
+                @if (logoError) {
+                  <span class="logo-error">{{ logoError }}</span>
+                }
+              </div>
             </div>
           </div>
         </div>
@@ -152,9 +194,18 @@
       </section>
 
       <div class="actions">
-        <button type="button" class="btn-cancel" (click)="cancelar()">Cancelar</button>
-        <button type="submit" class="btn-primary">Guardar empresa</button>
+        <ui-button type="button" variant="secondary" size="lg" (clicked)="cancelar()">
+          Cancelar
+        </ui-button>
+        <ui-button
+          type="button"
+          size="lg"
+          [loading]="isSaving"
+          (clicked)="guardar(companyForm)">
+          {{ isEditMode ? 'Actualizar empresa' : 'Guardar empresa' }}
+        </ui-button>
       </div>
     </form>
+    }
   </div>
 </div>

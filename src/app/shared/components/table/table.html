@@ -57,7 +57,7 @@
 
           <tbody class="bg-white divide-y divide-gray-200">
 
-            @for (row of data(); track trackByFn()($index, row)) {
+            @for (row of paginatedData(); track trackByFn()($index, row)) {
 
               <tr class="hover:bg-gray-50 transition-colors">
 
@@ -218,7 +218,7 @@
     </div>
     @if (showPagination()) {
       <app-pagination
-        [currentPage]="currentPage()"
+        [currentPage]="effectiveCurrentPage()"
         [totalPages]="totalPages()"
         [pageSize]="pageSize()"
         [totalItems]="effectiveTotalItems()"

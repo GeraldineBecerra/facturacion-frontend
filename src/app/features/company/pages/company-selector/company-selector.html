@@ -1,0 +1,73 @@
+<main class="selector-page">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-icon material-symbols-outlined">receipt_long</span>
+      <div>
+        <strong>DTE Digital</strong>
+        <span>Administración global</span>
+      </div>
+    </div>
+    <div class="account">
+      <div>
+        <strong>{{ auth.username() }}</strong>
+        <span>Superadministrador</span>
+      </div>
+      <ui-button variant="ghost" (clicked)="logout()">Cerrar sesión</ui-button>
+    </div>
+  </header>
+
+  <section class="selector-content">
+    <div class="intro">
+      <span class="eyebrow">Selecciona un tenant</span>
+      <h1>¿Con qué empresa quieres trabajar?</h1>
+      <p>Los usuarios, clientes, productos, facturas y folios se mostrarán según la empresa seleccionada.</p>
+    </div>
+
+    <div class="search-card">
+      <ui-input name="companySearch" label="Buscar empresa"
+        placeholder="RUT, razón social o nombre de fantasía"
+        [(ngModel)]="searchTerm" (ngModelChange)="filter()" />
+    </div>
+
+    @if (isLoading) {
+      <div class="state-card">
+        <div class="spinner"></div>
+        <p>Cargando empresas...</p>
+      </div>
+    } @else if (error) {
+      <div class="state-card error">
+        <span class="material-symbols-outlined">error</span>
+        <p>{{ error }}</p>
+        <ui-button (clicked)="loadCompanies()">Reintentar</ui-button>
+      </div>
+    } @else if (filteredCompanies.length === 0) {
+      <div class="state-card">
+        <span class="material-symbols-outlined">domain_disabled</span>
+        <p>No se encontraron empresas activas.</p>
+      </div>
+    } @else {
+      <div class="company-grid">
+        @for (company of filteredCompanies; track company.id) {
+          <button type="button" class="company-card" (click)="select(company)">
+            <div class="company-icon">
+              <span class="material-symbols-outlined">business</span>
+            </div>
+            <div class="company-copy">
+              <span class="status-dot">Empresa activa</span>
+              <h2>{{ company.nombreFantasia || company.razonSocial }}</h2>
+              <p>{{ company.razonSocial }}</p>
+              <dl>
+                <div><dt>RUT</dt><dd>{{ company.rutEmpresa }}</dd></div>
+                <div><dt>Ciudad</dt><dd>{{ company.ciudad || 'Sin información' }}</dd></div>
+              </dl>
+            </div>
+            <span class="select-action">
+              Ingresar
+              <span class="material-symbols-outlined">arrow_forward</span>
+            </span>
+          </button>
+        }
+      </div>
+    }
+  </section>
+</main>

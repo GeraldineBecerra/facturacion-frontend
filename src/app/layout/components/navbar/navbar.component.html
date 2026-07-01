@@ -12,10 +12,39 @@
       </div>
     </div>
 
-    <div class="hidden md:flex items-center gap-2 px-3 h-10 rounded-xl border border-slate-200 bg-white min-w-64">
-      <lucide-icon [img]="Search" class="w-4 h-4 text-slate-400"></lucide-icon>
-      <input type="text" placeholder="Buscar usuarios, empresas..."
-        class="w-full bg-transparent outline-none text-sm placeholder:text-slate-400" />
+    <div class="hidden sm:flex items-center gap-2 min-w-0">
+      <span class="material-symbols-outlined text-[19px] text-blue-600">business</span>
+
+      @if (auth.role() === 'ROLE_SUPER_ADMIN') {
+        <div class="relative">
+          <label for="navbarCompany" class="sr-only">Empresa activa</label>
+          <select
+            id="navbarCompany"
+            name="navbarCompany"
+            class="h-10 max-w-80 rounded-xl border border-slate-200 bg-white pl-3 pr-9 text-sm font-semibold text-slate-700 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:opacity-60"
+            [ngModel]="selectedCompanyId"
+            (ngModelChange)="changeCompany($event)"
+            [disabled]="isLoadingCompanies"
+          >
+            @if (isLoadingCompanies) {
+              <option [ngValue]="selectedCompanyId">Cargando empresas...</option>
+            } @else if (!selectedCompanyId) {
+              <option [ngValue]="null">Sin empresa seleccionada</option>
+            }
+            @for (company of companies; track company.id) {
+              <option [ngValue]="company.id">
+                {{ company.nombreFantasia || company.razonSocial }}
+              </option>
+            }
+          </select>
+        </div>
+      } @else {
+        <div class="max-w-72 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+          <p class="truncate text-sm font-semibold text-slate-700">
+            {{ currentCompany?.nombreFantasia || currentCompany?.razonSocial || (isLoadingCompanies ? 'Cargando empresa...' : 'Sin empresa') }}
+          </p>
+        </div>
+      }
     </div>
 
     <div class="flex items-center gap-2">
@@ -24,8 +53,15 @@
         <lucide-icon [img]="Bell" class="w-4 h-4"></lucide-icon>
       </button>
 
-      <div class="h-10 w-10 rounded-xl bg-slate-200 overflow-hidden ring-2 ring-slate-100">
-        <img src="https://i.pravatar.cc/40" alt="Avatar">
+      <div class="hidden lg:block text-right leading-tight">
+        <p class="max-w-40 truncate text-sm font-semibold text-slate-700">{{ auth.username() }}</p>
+        <p class="max-w-40 truncate text-[11px] text-slate-500">
+          {{ currentCompany?.nombreFantasia || currentCompany?.razonSocial || (isLoadingCompanies ? 'Cargando empresa...' : 'Sin empresa') }}
+        </p>
+      </div>
+
+      <div class="h-10 w-10 rounded-xl bg-blue-100 text-blue-700 overflow-hidden ring-2 ring-slate-100 flex items-center justify-center">
+        <span class="material-symbols-outlined">person</span>
       </div>
     </div>
   </div>

@@ -15,12 +15,11 @@
     />
 
     <div class="select-field">
-      <label for="tipo">Tipo</label>
-      <select id="tipo" name="tipo" [(ngModel)]="filters.type">
+      <label for="tipo">Estado</label>
+      <select id="tipo" name="tipo" [(ngModel)]="filters.status">
         <option value="">Todos</option>
-        <option value="Corporativo">Corporativo</option>
-        <option value="Persona">Persona</option>
-        <option value="Gubernamental">Gubernamental</option>
+        <option value="true">Activos</option>
+        <option value="false">Inactivos</option>
       </select>
     </div>
 
@@ -42,8 +41,10 @@
       [columns]="columns"
       [data]="filteredCustomers"
       [actions]="actions"
+      [isLoading]="isLoading"
+      [error]="error"
       [totalItems]="filteredCustomers.length"
-      [showPagination]="false"
+      (retry)="loadCustomers()"
     />
   </section>
 
@@ -53,8 +54,8 @@
       <strong>+12%</strong>
     </article>
     <article>
-      <span>Total corporativos</span>
-      <strong>{{ corporateCustomers }}</strong>
+      <span>Clientes activos</span>
+      <strong>{{ activeCustomers }}</strong>
     </article>
     <article>
       <span>Actividad reciente</span>

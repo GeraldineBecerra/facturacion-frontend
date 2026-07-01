@@ -1,63 +1,41 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { finalize } from 'rxjs';
 import { PageHeaderComponent } from '../../../../shared/components/header/page-header.component';
-import {
-  DynamicTableComponent,
-  TableAction,
-  TableColumn,
-} from '../../../../shared/components/table/table';
+import { DynamicTableComponent, TableAction, TableColumn } from '../../../../shared/components/table/table';
 import { UiButtonComponent } from '../../../../shared/ui/ui-button/ui-button.component';
 import { UiInputComponent } from '../../../../shared/ui/ui-input/ui-input.component';
-
-interface Customer {
-  id: number;
-  rut: string;
-  businessName: string;
-  shortName: string;
-  type: 'Corporativo' | 'Persona' | 'Gubernamental';
-  active: boolean;
-}
+import { CustomerResponse } from '../../models/customer.model';
+import { CustomerService } from '../../services/customer.service';
 
 @Component({
   selector: 'app-customers-list',
   standalone: true,
-  imports: [
-    FormsModule,
-    DynamicTableComponent,
-    PageHeaderComponent,
-    UiButtonComponent,
-    UiInputComponent,
-  ],
+  imports: [FormsModule, DynamicTableComponent, PageHeaderComponent, UiButtonComponent, UiInputComponent],
   templateUrl: './customers-list.html',
   styleUrl: './customers-list.scss',
 })
-export class CustomersList {
-  filters = { search: '', type: '' };
+export class CustomersList implements OnInit {
+  filters = { search: '', status: '' };
+  customers: CustomerResponse[] = [];
+  filteredCustomers: CustomerResponse[] = [];
+  isLoading = false;
+  error: string | null = null;
 
   columns: TableColumn[] = [
     { key: 'rut', label: 'RUT', sortable: true },
-    { key: 'businessName', label: 'Razón social', type: 'avatar', avatarKey: 'rut' },
-    { key: 'shortName', label: 'Nombre corto' },
-    {
-      key: 'type',
-      label: 'Tipo',
-      type: 'badge',
-      badgeColors: {
-        Corporativo: 'bg-blue-100 text-blue-800',
-        Persona: 'bg-orange-100 text-orange-800',
-        Gubernamental: 'bg-violet-100 text-violet-800',
-      },
-    },
-    { key: 'active', label: 'Activo', type: 'boolean', trueLabel: 'Sí', falseLabel: 'No' },
+    { key: 'razonSocial', label: 'Razón social', type: 'avatar', avatarKey: 'rut' },
+    { key: 'nombreFantasia', label: 'Nombre de fantasía' },
+    { key: 'email', label: 'Email' },
+    { key: 'activo', label: 'Activo', type: 'boolean', trueLabel: 'Sí', falseLabel: 'No' },
   ];
 
   actions: TableAction[] = [
     {
-      type: 'custom',
+      type: 'edit',
       label: 'Editar cliente',
-      clickFn: (customer) => this.editCustomer(customer),
-      colorClass: 'text-blue-600 hover:bg-blue-50',
+      routerLinkFn: (customer) => ['/clientes', customer.id, 'editar'],
     },
     {
       type: 'delete',
@@ -66,20 +44,26 @@ export class CustomersList {
     },
   ];
 
-  customers: Customer[] = [
-    { id: 1, rut: '76.452.129-K', businessName: 'Constructora Horizonte SpA', shortName: 'Horizonte', type: 'Corporativo', active: true },
-    { id: 2, rut: '15.982.334-0', businessName: 'Andrés Ignacio Valdés', shortName: 'A. Valdés', type: 'Persona', active: true },
-    { id: 3, rut: '99.003.442-8', businessName: 'Metrópolis Inmobiliaria Ltda.', shortName: 'Metrópolis', type: 'Corporativo', active: true },
-    { id: 4, rut: '77.123.889-4', businessName: 'Alpha Steel Corp', shortName: 'Alpha', type: 'Corporativo', active: false },
-    { id: 5, rut: '18.445.902-1', businessName: 'María José Pereira', shortName: 'M. Pereira', type: 'Persona', active: true },
-  ];
+  constructor(private router: Router, private customerService: CustomerService) {}
 
-  filteredCustomers = [...this.customers];
+  ngOnInit(): void {
+    this.loadCustomers();
+  }
 
-  constructor(private router: Router) {}
+  get activeCustomers(): number {
+    return this.customers.filter((customer) => customer.activo).length;
+  }
 
-  get corporateCustomers(): number {
-    return this.customers.filter((customer) => customer.type === 'Corporativo').length;
+  loadCustomers(): void {
+    this.isLoading = true;
+    this.error = null;
+    this.customerService.findAll().pipe(finalize(() => this.isLoading = false)).subscribe({
+      next: (customers) => {
+        this.customers = customers;
+        this.search();
+      },
+      error: () => this.error = 'No fue posible cargar los clientes.',
+    });
   }
 
   createCustomer(): void {
@@ -89,23 +73,27 @@ export class CustomersList {
   search(): void {
     const term = this.filters.search.trim().toLowerCase();
     this.filteredCustomers = this.customers.filter((customer) => {
-      const matchesTerm = !term || [customer.rut, customer.businessName, customer.shortName]
-        .some((value) => value.toLowerCase().includes(term));
-      return matchesTerm && (!this.filters.type || customer.type === this.filters.type);
+      const matchesTerm = !term ||
+        [customer.rut, customer.razonSocial, customer.nombreFantasia, customer.email]
+          .some((value) => value?.toLowerCase().includes(term));
+      const matchesStatus = !this.filters.status || String(customer.activo) === this.filters.status;
+      return matchesTerm && matchesStatus;
     });
   }
 
   clearFilters(): void {
-    this.filters = { search: '', type: '' };
-    this.filteredCustomers = [...this.customers];
-  }
-
-  editCustomer(customer: Customer): void {
-    this.router.navigate(['/clientes/nuevo'], { queryParams: { id: customer.id } });
-  }
-
-  deleteCustomer(customer: Customer): void {
-    this.customers = this.customers.filter((item) => item.id !== customer.id);
+    this.filters = { search: '', status: '' };
     this.search();
+  }
+
+  deleteCustomer(customer: CustomerResponse): void {
+    if (!window.confirm(`¿Eliminar al cliente "${customer.razonSocial}"?`)) return;
+    this.customerService.delete(customer.id).subscribe({
+      next: () => {
+        this.customers = this.customers.filter((item) => item.id !== customer.id);
+        this.search();
+      },
+      error: () => this.error = 'No fue posible eliminar el cliente.',
+    });
   }
 }

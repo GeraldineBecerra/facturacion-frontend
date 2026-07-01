@@ -62,10 +62,10 @@
     @apply pt-6 flex flex-col sm:flex-row gap-4 justify-end;
 }
 
-.btn-primary {
-    @apply px-8 py-3 rounded-xl bg-blue-600 text-white font-bold text-sm hover:bg-blue-700 shadow-sm active:scale-95 transition-all;
+.form-error {
+    @apply mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700;
 }
 
-.btn-cancel {
-    @apply px-8 py-3 rounded-xl border border-slate-300 text-slate-600 font-bold text-sm hover:bg-slate-100 transition-colors;
+.field-hint {
+    @apply text-xs text-slate-500;
 }

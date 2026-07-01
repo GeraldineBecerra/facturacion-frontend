@@ -11,15 +11,18 @@
     <div class="flex items-center justify-between mb-4">
       <p class="text-sm text-slate-500">Visualiza razones sociales, giros y estado de validacion de cada empresa.</p>
       <span class="text-xs font-semibold px-3 py-1 rounded-full bg-indigo-50 text-indigo-700">
-        {{ data.length }} registros
+        {{ companies.length }} registros
       </span>
     </div>
 
     <app-table
       [columns]="columns"
-      [data]="data"
-      [totalItems]="data.length"
-      [showPagination]="false">
+      [data]="companies"
+      [actions]="actions"
+      [isLoading]="isLoading"
+      [error]="error"
+      [totalItems]="companies.length"
+      (retry)="loadCompanies()">
     </app-table>
   </section>
 
