@@ -1,0 +1,37 @@
+.customer-form-page { min-height: 100%; padding: 2.5rem; background: rgb(241 245 249 / .8); }
+.customer-form { display: grid; max-width: 72rem; margin-inline: auto; gap: 1.5rem; }
+.form-card { padding: 2rem; border: 1px solid #e2e8f0; border-radius: 1rem; background: white; box-shadow: 0 1px 2px rgb(15 23 42 / .05); }
+.section-title { margin: 0 0 1.5rem; color: #1e293b; font-size: 1.25rem; font-weight: 700; }
+.status-grid, .contacts-grid, .form-grid { display: grid; gap: 1.25rem; }
+.status-grid, .contacts-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.status-grid { margin-bottom: 1.75rem; }
+.form-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.checkbox-card { padding: 1rem 1rem 0; border: 1px solid #e2e8f0; border-radius: .75rem; background: #f8fafc; }
+.select-field { display: flex; flex-direction: column; gap: .25rem; }
+.select-field label { color: #374151; font-size: .875rem; font-weight: 500; }
+.select-field select { width: 100%; padding: .5rem .75rem; border: 1px solid #d1d5db; border-radius: .5rem; font-size: .875rem; }
+.contact-card { display: grid; gap: .75rem; padding: 1.5rem; }
+.contact-card h3 { margin-bottom: .5rem; color: #1e293b; font-weight: 700; }
+.actions { display: flex; justify-content: flex-end; gap: .75rem; padding-bottom: 1rem; }
+@media (max-width: 900px) {
+  .status-grid, .contacts-grid, .form-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .customer-form-page { padding: 1.5rem; }
+  .form-card { padding: 1.5rem; }
+  .actions { flex-direction: column; }
+}
+.error-message {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border: 1px solid #fecaca;
+  border-radius: .75rem;
+  color: #b91c1c;
+  background: #fef2f2;
+}
+
+.loading-message {
+  padding: 4rem;
+  color: #64748b;
+  text-align: center;
+}

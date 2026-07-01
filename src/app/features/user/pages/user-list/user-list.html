@@ -1,0 +1,28 @@
+<div class="p-6 md:p-10 space-y-8 bg-slate-100/80 min-h-full">
+  <app-page-header
+    headerTitle="Gestión de Usuarios"
+    subtitle="Administra el acceso y roles en la plataforma."
+    buttonLabel="Nuevo Usuario"
+    (buttonClick)="createUser()">
+  </app-page-header>
+
+  <section class="bg-white border border-slate-200 rounded-2xl p-4 md:p-6 shadow-sm">
+    <div class="flex items-center justify-between mb-4">
+      <p class="text-sm text-slate-500">Listado de usuarios con control de acceso y estado de cuenta.</p>
+      <span class="text-xs font-semibold px-3 py-1 rounded-full bg-blue-50 text-blue-700">
+        {{ users.length }} registros
+      </span>
+    </div>
+
+    <app-table
+      [columns]="columns"
+      [data]="users"
+      [actions]="actions"
+      [isLoading]="isLoading"
+      [error]="error"
+      [totalItems]="users.length"
+      (retry)="loadUsers()"
+    />
+  </section>
+
+</div>

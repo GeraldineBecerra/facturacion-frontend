@@ -1,0 +1,38 @@
+<div class="role-page">
+  <app-page-header
+    headerTitle="Gestión de Roles"
+    subtitle="Consulta los perfiles disponibles y registra nuevos roles del sistema."
+  />
+
+  @if (error) { <div class="message error">{{ error }}</div> }
+  @if (success) { <div class="message success">{{ success }}</div> }
+
+  <section class="card">
+    <div class="section-heading">
+      <h2>Nuevo rol</h2>
+      <p>El backend agregará automáticamente el prefijo ROLE_ si no lo escribes.</p>
+    </div>
+    <form #roleForm="ngForm" (ngSubmit)="save(roleForm)">
+      <div class="form-grid">
+        <ui-input name="nombre" label="Nombre técnico" placeholder="Ej. AUDITOR"
+          [(ngModel)]="role.nombre" [required]="true" />
+        <ui-input name="nombreMostrar" label="Nombre visible" placeholder="Auditor"
+          [(ngModel)]="role.nombreMostrar" [required]="true" />
+        <ui-input name="descripcion" label="Descripción" placeholder="Permisos y propósito del rol"
+          [(ngModel)]="role.descripcion" />
+      </div>
+      <div class="actions">
+        <ui-button type="submit" [loading]="isSaving">Crear rol</ui-button>
+      </div>
+    </form>
+  </section>
+
+  <section class="card">
+    <div class="section-heading">
+      <h2>Roles registrados</h2>
+      <p>{{ roles.length }} perfiles disponibles</p>
+    </div>
+    <app-table [columns]="columns" [data]="roles" [isLoading]="isLoading"
+      [error]="error" (retry)="loadRoles()" />
+  </section>
+</div>

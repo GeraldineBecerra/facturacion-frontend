@@ -1,0 +1,108 @@
+<div class="customer-form-page">
+  <app-page-header
+    [headerTitle]="isEditMode ? 'Editar Cliente' : 'Nuevo Cliente'"
+    subtitle="Registra los datos comerciales, contactos y canales de cobranza."
+  />
+
+  @if (error) {
+    <div class="error-message">{{ error }}</div>
+  }
+
+  @if (isLoading) {
+    <div class="loading-message">Cargando cliente...</div>
+  } @else {
+  <form #customerForm="ngForm" class="customer-form" (ngSubmit)="saveCustomer(customerForm)">
+    <section class="form-card">
+      <h2 class="section-title">Datos del cliente</h2>
+
+      <div class="status-grid">
+        <div class="checkbox-card">
+          <ui-checkbox name="agent" label="Es agente" [(ngModel)]="customer.agent" />
+        </div>
+        <div class="checkbox-card">
+          <ui-checkbox name="blocked" label="Bloqueado" [(ngModel)]="customer.blocked" />
+        </div>
+        <div class="checkbox-card">
+          <ui-checkbox name="foreign" label="Extranjero" [(ngModel)]="customer.foreign" />
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <ui-input name="rut" label="RUT" placeholder="12.345.678-9"
+          [(ngModel)]="customer.rut" [required]="true" />
+        <ui-input className="md:col-span-2" name="businessName" label="Razón social"
+          placeholder="Empresa S.A." [(ngModel)]="customer.businessName" [required]="true" />
+        <ui-input name="shortName" label="Nombre corto" placeholder="Mi Empresa"
+          [(ngModel)]="customer.shortName" />
+
+        <div class="select-field">
+          <label for="type">Tipo</label>
+          <select id="type" name="type" [(ngModel)]="customer.type">
+            <option value="Corporativo">Corporativo</option>
+            <option value="Persona">Persona natural</option>
+            <option value="Gubernamental">Gubernamental</option>
+          </select>
+        </div>
+
+        <div class="select-field">
+          <label for="country">País</label>
+          <select id="country" name="country" [(ngModel)]="customer.country">
+            <option value="Chile">Chile</option>
+            <option value="Argentina">Argentina</option>
+            <option value="Perú">Perú</option>
+          </select>
+        </div>
+
+        <ui-input className="md:col-span-3" name="address" label="Dirección"
+          placeholder="Avenida Siempre Viva 123" [(ngModel)]="customer.address" />
+        <ui-input name="district" label="Comuna" [(ngModel)]="customer.district" />
+        <ui-input name="city" label="Ciudad" [(ngModel)]="customer.city" />
+        <ui-input name="email" type="email" label="Correo electrónico"
+          placeholder="contacto@empresa.cl" [(ngModel)]="customer.email" />
+        <ui-input className="md:col-span-3" name="businessActivity" label="Giro"
+          placeholder="Venta de servicios de transporte y logística"
+          [(ngModel)]="customer.businessActivity" />
+        <ui-input name="internalNote" label="Glosa interna"
+          [(ngModel)]="customer.internalNote" />
+        <ui-input name="internalCode" label="Código interno"
+          [(ngModel)]="customer.internalCode" />
+      </div>
+    </section>
+
+    <section class="contacts-grid">
+      @for (contact of contactSections; track contact.key) {
+        <article class="form-card contact-card">
+          <h3>{{ contact.title }}</h3>
+          <ui-input [name]="contact.key + 'Phone'" type="tel" label="Teléfono"
+            [(ngModel)]="customer.contacts[contact.key].phone" />
+          <ui-input [name]="contact.key + 'Email'" type="email" label="Email"
+            [(ngModel)]="customer.contacts[contact.key].email" />
+          <ui-input [name]="contact.key + 'Position'" label="Cargo"
+            [(ngModel)]="customer.contacts[contact.key].position" />
+        </article>
+      }
+    </section>
+
+    <section class="form-card">
+      <h2 class="section-title">Cobranzas</h2>
+      <div class="form-grid">
+        <ui-input name="collectionMain" type="email" label="Email principal"
+          placeholder="cobranzas@empresa.cl" [(ngModel)]="customer.collections.main" />
+        <ui-input name="collectionOptionalOne" type="email" label="Email opcional 01"
+          [(ngModel)]="customer.collections.optionalOne" />
+        <ui-input name="collectionOptionalTwo" type="email" label="Email opcional 02"
+          [(ngModel)]="customer.collections.optionalTwo" />
+      </div>
+    </section>
+
+    <div class="actions">
+      <ui-button type="button" variant="secondary" size="lg" (clicked)="cancel()">
+        Cancelar
+      </ui-button>
+      <ui-button type="submit" size="lg" [loading]="isSaving">
+        {{ isEditMode ? 'Actualizar cliente' : 'Guardar cliente' }}
+      </ui-button>
+    </div>
+  </form>
+  }
+</div>

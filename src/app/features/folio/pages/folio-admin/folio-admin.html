@@ -1,0 +1,80 @@
+<div class="folio-page">
+  <app-page-header
+    headerTitle="Administración de Folios"
+    subtitle="Consulta tipos de documento, carga archivos CAF y revisa su consumo."
+  />
+
+  @if (error) {
+    <div class="message error">{{ error }}</div>
+  }
+  @if (success) {
+    <div class="message success">{{ success }}</div>
+  }
+
+  <section class="card">
+    <div class="section-heading">
+      <div>
+        <h2>Cargar CAF</h2>
+        <p>Registra un nuevo rango de folios autorizado por el SII.</p>
+      </div>
+    </div>
+
+    <form #cafForm="ngForm" (ngSubmit)="uploadCaf(cafForm)">
+      <div class="form-grid">
+        <div class="select-field">
+          <label for="codigoTipoDocumento">Tipo de documento <span>*</span></label>
+          <select id="codigoTipoDocumento" name="codigoTipoDocumento"
+            [(ngModel)]="caf.codigoTipoDocumento" required>
+            <option [ngValue]="null">Selecciona un tipo</option>
+            @for (type of documentTypes; track type.id) {
+              <option [ngValue]="type.codigoSii">{{ type.codigoSii }} · {{ type.descripcion }}</option>
+            }
+          </select>
+        </div>
+
+        <ui-input id="rangoDesde" name="rangoDesde" type="number" label="Rango desde"
+          [(ngModel)]="caf.rangoDesde" [required]="true" />
+        <ui-input id="rangoHasta" name="rangoHasta" type="number" label="Rango hasta"
+          [(ngModel)]="caf.rangoHasta" [required]="true" />
+        <ui-input id="fechaAutorizacion" name="fechaAutorizacion" type="date"
+          label="Fecha de autorización" [(ngModel)]="caf.fechaAutorizacion" [required]="true" />
+        <ui-input id="fechaVencimiento" name="fechaVencimiento" type="date"
+          label="Fecha de vencimiento" [(ngModel)]="caf.fechaVencimiento" />
+
+        <div class="xml-field">
+          <label for="cafXml">XML del CAF <span>*</span></label>
+          <textarea id="cafXml" name="cafXml" rows="7" [(ngModel)]="caf.cafXml" required
+            placeholder="Pega aquí el contenido XML entregado por el SII"></textarea>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <ui-button type="submit" size="lg" [loading]="isSaving">Cargar CAF</ui-button>
+      </div>
+    </form>
+  </section>
+
+  <section class="card">
+    <div class="section-heading">
+      <div>
+        <h2>CAF registrados</h2>
+        <p>Rangos autorizados y folios todavía disponibles.</p>
+      </div>
+      <span>{{ cafs.length }} registros</span>
+    </div>
+    <app-table [columns]="cafColumns" [data]="cafs" [isLoading]="isLoading"
+      [error]="error" (retry)="loadData()" />
+  </section>
+
+  <section class="card">
+    <div class="section-heading">
+      <div>
+        <h2>Control de folios</h2>
+        <p>Seguimiento del último folio utilizado por documento.</p>
+      </div>
+    </div>
+    <app-table [columns]="controlColumns" [data]="controls" [isLoading]="isLoading"
+      [error]="error" (retry)="loadData()" />
+  </section>
+
+</div>

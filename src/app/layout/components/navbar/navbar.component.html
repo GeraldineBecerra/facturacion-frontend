@@ -1,0 +1,68 @@
+<nav class="sticky top-0 z-50 border-b border-slate-200/70 bg-white/90 backdrop-blur">
+  <div class="h-16 px-4 md:px-6 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <button (click)="toggleSidebar.emit()"
+        class="h-10 w-10 rounded-xl border border-slate-200 flex items-center justify-center hover:bg-slate-100 transition-colors">
+        <lucide-icon [img]="Menu" class="w-4 h-4"></lucide-icon>
+      </button>
+
+      <div>
+        <p class="text-[11px] uppercase tracking-[0.12em] text-slate-500">Workspace</p>
+        <h1 class="text-base md:text-lg font-bold tracking-tight">Facturacion Dashboard</h1>
+      </div>
+    </div>
+
+    <div class="hidden sm:flex items-center gap-2 min-w-0">
+      <span class="material-symbols-outlined text-[19px] text-blue-600">business</span>
+
+      @if (auth.role() === 'ROLE_SUPER_ADMIN') {
+        <div class="relative">
+          <label for="navbarCompany" class="sr-only">Empresa activa</label>
+          <select
+            id="navbarCompany"
+            name="navbarCompany"
+            class="h-10 max-w-80 rounded-xl border border-slate-200 bg-white pl-3 pr-9 text-sm font-semibold text-slate-700 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:opacity-60"
+            [ngModel]="selectedCompanyId"
+            (ngModelChange)="changeCompany($event)"
+            [disabled]="isLoadingCompanies"
+          >
+            @if (isLoadingCompanies) {
+              <option [ngValue]="selectedCompanyId">Cargando empresas...</option>
+            } @else if (!selectedCompanyId) {
+              <option [ngValue]="null">Sin empresa seleccionada</option>
+            }
+            @for (company of companies; track company.id) {
+              <option [ngValue]="company.id">
+                {{ company.nombreFantasia || company.razonSocial }}
+              </option>
+            }
+          </select>
+        </div>
+      } @else {
+        <div class="max-w-72 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+          <p class="truncate text-sm font-semibold text-slate-700">
+            {{ currentCompany?.nombreFantasia || currentCompany?.razonSocial || (isLoadingCompanies ? 'Cargando empresa...' : 'Sin empresa') }}
+          </p>
+        </div>
+      }
+    </div>
+
+    <div class="flex items-center gap-2">
+      <button
+        class="h-10 w-10 rounded-xl border border-slate-200 flex items-center justify-center hover:bg-slate-100 transition-colors">
+        <lucide-icon [img]="Bell" class="w-4 h-4"></lucide-icon>
+      </button>
+
+      <div class="hidden lg:block text-right leading-tight">
+        <p class="max-w-40 truncate text-sm font-semibold text-slate-700">{{ auth.username() }}</p>
+        <p class="max-w-40 truncate text-[11px] text-slate-500">
+          {{ currentCompany?.nombreFantasia || currentCompany?.razonSocial || (isLoadingCompanies ? 'Cargando empresa...' : 'Sin empresa') }}
+        </p>
+      </div>
+
+      <div class="h-10 w-10 rounded-xl bg-blue-100 text-blue-700 overflow-hidden ring-2 ring-slate-100 flex items-center justify-center">
+        <span class="material-symbols-outlined">person</span>
+      </div>
+    </div>
+  </div>
+</nav>

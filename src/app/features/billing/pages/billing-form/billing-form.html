@@ -1,0 +1,216 @@
+<div class="billing-form-page">
+  <div class="page-heading">
+    <app-page-header
+      headerTitle="Nueva factura"
+      subtitle="Crea y administra un documento tributario electrónico."
+    />
+
+    <div class="heading-actions">
+      <ui-button type="button" variant="secondary" (clicked)="saveDraft()">
+        Guardar borrador
+      </ui-button>
+      <ui-button type="button" (clicked)="saveBilling()">Emitir factura</ui-button>
+    </div>
+  </div>
+
+  <form class="billing-form" (ngSubmit)="saveBilling()">
+    <div class="two-column-layout">
+      <section class="form-card main-column">
+        <h2 class="section-title">Identificación del cliente</h2>
+
+        <div class="form-grid">
+          <ui-input name="rutReceptor" label="RUT receptor" placeholder="76.123.456-K"
+            [(ngModel)]="billing.rutReceptor" [required]="true" />
+          <ui-input name="razonSocial" label="Razón social" placeholder="Empresa receptora"
+            [(ngModel)]="billing.razonSocial" [required]="true" />
+          <ui-input className="md:col-span-2" name="direccion" label="Dirección"
+            placeholder="Calle, número y oficina" [(ngModel)]="billing.direccion" />
+          <ui-input name="ciudad" label="Ciudad" [(ngModel)]="billing.ciudad" />
+          <ui-input name="comuna" label="Comuna" [(ngModel)]="billing.comuna" />
+
+          <div class="field">
+            <label for="pais">País</label>
+            <select id="pais" name="pais" [(ngModel)]="billing.pais">
+              <option value="Chile">Chile</option>
+              <option value="Argentina">Argentina</option>
+              <option value="Perú">Perú</option>
+            </select>
+          </div>
+
+          <ui-input name="giro" label="Giro" placeholder="Actividad económica"
+            [(ngModel)]="billing.giro" />
+          <ui-input name="email" type="email" label="Correo electrónico"
+            placeholder="facturacion@empresa.cl" [(ngModel)]="billing.email" />
+          <ui-input name="glosaInterna" label="Glosa interna"
+            [(ngModel)]="billing.glosaInterna" />
+          <ui-input name="codigoInterno" label="Código interno"
+            [(ngModel)]="billing.codigoInterno" />
+        </div>
+      </section>
+
+      <section class="form-card">
+        <h2 class="section-title">Condiciones del documento</h2>
+
+        <div class="conditions-grid">
+          <div class="field">
+            <label for="tipoDocumento">Tipo de documento</label>
+            <select id="tipoDocumento" name="tipoDocumento" [(ngModel)]="billing.tipoDocumento">
+              <option value="33">Factura Electrónica</option>
+              <option value="34">Factura Exenta</option>
+              <option value="61">Nota de Crédito</option>
+            </select>
+          </div>
+
+          <ui-input name="folio" label="Folio" placeholder="Ej. 12345"
+            [(ngModel)]="billing.folio" [required]="true" />
+
+          <div class="field">
+            <label for="condicionPago">Condición de pago</label>
+            <select id="condicionPago" name="condicionPago" [(ngModel)]="billing.condicionPago">
+              <option value="credito-30">Crédito 30 días</option>
+              <option value="contado">Contado</option>
+              <option value="transferencia">Transferencia</option>
+            </select>
+          </div>
+
+          <div class="compact-grid">
+            <ui-input name="porcentajeIva" type="number" label="% IVA"
+              [(ngModel)]="billing.porcentajeIva" />
+            <ui-input name="tipoCambio" type="number" label="Tipo de cambio"
+              [(ngModel)]="billing.tipoCambio" />
+          </div>
+
+          <ui-input name="motivo" label="Motivo" [(ngModel)]="billing.motivo" />
+
+          <div class="field">
+            <label>Moneda</label>
+            <div class="currency-selector">
+              @for (currency of ['CLP', 'USD', 'EUR']; track currency) {
+                <button type="button"
+                  [class.active]="billing.moneda === currency"
+                  (click)="selectCurrency($any(currency))">
+                  {{ currency }}
+                </button>
+              }
+            </div>
+          </div>
+
+          <div class="compact-grid">
+            <ui-input name="fechaEmision" type="date" label="Emisión"
+              [(ngModel)]="billing.fechaEmision" [required]="true" />
+            <ui-input name="fechaVencimiento" type="date" label="Vencimiento"
+              [(ngModel)]="billing.fechaVencimiento" />
+          </div>
+
+          <div class="checkbox-card">
+            <ui-checkbox name="exenta" label="Documento exento de IVA"
+              [(ngModel)]="billing.exenta" />
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="two-column-layout equal-columns">
+      <section class="form-card">
+        <h2 class="section-title">Observaciones</h2>
+        <div class="field">
+          <label for="observaciones">Notas adicionales</label>
+          <textarea id="observaciones" name="observaciones"
+            placeholder="Notas para el cliente o uso interno..."
+            [(ngModel)]="billing.observaciones"></textarea>
+        </div>
+      </section>
+
+      <section class="form-card upload-card">
+        <h2 class="section-title">Importar archivo</h2>
+        <p>Sube un archivo CSV o XML para cargar datos del documento.</p>
+
+        <label class="file-picker" for="billingFile">
+          <span class="material-symbols-outlined">cloud_upload</span>
+          <span>{{ importedFileName || 'Seleccionar archivo' }}</span>
+        </label>
+        <input id="billingFile" type="file" accept=".csv,.xml" (change)="onFileSelected($event)" />
+
+        <ui-input name="numeroDocumento" label="Número de documento"
+          placeholder="Doc #0000" [(ngModel)]="billing.numeroDocumento" />
+      </section>
+    </div>
+
+    <section class="form-card detail-section">
+      <div class="section-heading">
+        <div>
+          <h2 class="section-title no-margin">Detalle del documento</h2>
+          <p>Agrega los productos o servicios incluidos en la factura.</p>
+        </div>
+        <ui-button type="button" variant="secondary" size="sm" (clicked)="addDetail()">
+          Agregar línea
+        </ui-button>
+      </div>
+
+      <div class="detail-table-wrapper">
+        <table class="detail-table">
+          <thead>
+            <tr>
+              <th>Descripción</th>
+              <th>Cantidad</th>
+              <th>U. medida</th>
+              <th>Precio unitario</th>
+              <th>Desc. %</th>
+              <th>Total</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (detail of details; track $index) {
+              <tr>
+                <td>
+                  <input [name]="'descripcion-' + $index" [(ngModel)]="detail.descripcion"
+                    placeholder="Producto o servicio" />
+                </td>
+                <td>
+                  <input [name]="'cantidad-' + $index" type="number"
+                    [(ngModel)]="detail.cantidad" min="1" />
+                </td>
+                <td>
+                  <input [name]="'unidad-' + $index" [(ngModel)]="detail.unidadMedida" />
+                </td>
+                <td>
+                  <input [name]="'precio-' + $index" type="number"
+                    [(ngModel)]="detail.precioUnitario" min="0" />
+                </td>
+                <td>
+                  <input [name]="'descuento-' + $index" type="number"
+                    [(ngModel)]="detail.descuento" min="0" max="100" />
+                </td>
+                <td class="line-total">
+                  {{ getLineTotal(detail) | currency:'CLP':'symbol-narrow':'1.0-0':'es-CL' }}
+                </td>
+                <td>
+                  <button type="button" class="remove-button"
+                    [disabled]="details.length === 1"
+                    (click)="removeDetail($index)"
+                    aria-label="Eliminar línea">
+                    ×
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="totals">
+        <div><span>Subtotal</span><strong>{{ subtotal | currency:'CLP':'symbol-narrow':'1.0-0':'es-CL' }}</strong></div>
+        <div><span>IVA</span><strong>{{ ivaAmount | currency:'CLP':'symbol-narrow':'1.0-0':'es-CL' }}</strong></div>
+        <div class="grand-total"><span>Total</span><strong>{{ total | currency:'CLP':'symbol-narrow':'1.0-0':'es-CL' }}</strong></div>
+      </div>
+    </section>
+
+    <div class="actions">
+      <ui-button type="button" variant="secondary" size="lg" (clicked)="cancel()">
+        Cancelar
+      </ui-button>
+      <ui-button type="submit" size="lg">Guardar factura</ui-button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,29 @@
+<div class="catalog-page">
+  <app-page-header
+    headerTitle="Tipos de Documento"
+    subtitle="Catálogo de documentos tributarios electrónicos configurados en el sistema."
+  />
+
+  <section class="filter-card">
+    <ui-input name="documentTypeSearch" label="Buscar tipo de documento"
+      placeholder="Código SII o descripción" [(ngModel)]="searchTerm"
+      (ngModelChange)="filter()" />
+    <div class="filter-actions">
+      <ui-button variant="secondary" (clicked)="clearFilter()">Limpiar</ui-button>
+    </div>
+  </section>
+
+  <section class="table-card">
+    <div class="table-heading">
+      <div>
+        <h2>Catálogo tributario</h2>
+        <p>{{ filteredDocumentTypes.length }} tipos de documento disponibles</p>
+      </div>
+      <span>Solo lectura</span>
+    </div>
+
+    <app-table [columns]="columns" [data]="filteredDocumentTypes"
+      [isLoading]="isLoading" [error]="error"
+      (retry)="loadDocumentTypes()" />
+  </section>
+</div>

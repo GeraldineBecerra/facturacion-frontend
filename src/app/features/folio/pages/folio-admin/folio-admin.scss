@@ -1,0 +1,83 @@
+.folio-page {
+  min-height: 100%;
+  padding: 2.5rem;
+  background: rgb(241 245 249 / .8);
+}
+
+.card {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  background: white;
+  box-shadow: 0 1px 2px rgb(15 23 42 / .05);
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.section-heading h2 { color: #1e293b; font-size: 1.125rem; font-weight: 700; }
+.section-heading p { margin-top: .25rem; color: #64748b; font-size: .875rem; }
+.section-heading > span {
+  padding: .25rem .75rem;
+  border-radius: 999px;
+  color: #4338ca;
+  background: #eef2ff;
+  font-size: .75rem;
+  font-weight: 700;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+.select-field,
+.xml-field { display: flex; flex-direction: column; gap: .5rem; }
+.select-field label,
+.xml-field label { color: #374151; font-size: .875rem; font-weight: 500; }
+.select-field label span,
+.xml-field label span { color: #dc2626; }
+.select-field select,
+.xml-field textarea {
+  width: 100%;
+  padding: .65rem .75rem;
+  border: 1px solid #d1d5db;
+  border-radius: .5rem;
+  color: #1f2937;
+  background: white;
+  outline: none;
+}
+.select-field select:focus,
+.xml-field textarea:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgb(59 130 246 / .18);
+}
+.xml-field { grid-column: 1 / -1; }
+.xml-field textarea {
+  resize: vertical;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: .8rem;
+}
+.form-actions { display: flex; justify-content: flex-end; margin-top: 1.5rem; }
+
+.message {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border-radius: .75rem;
+  font-size: .875rem;
+}
+.message.error { border: 1px solid #fecaca; color: #b91c1c; background: #fef2f2; }
+.message.success { border: 1px solid #bbf7d0; color: #15803d; background: #f0fdf4; }
+
+@media (max-width: 900px) {
+  .form-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 650px) {
+  .folio-page { padding: 1.5rem; }
+  .form-grid { grid-template-columns: 1fr; }
+}

@@ -1,0 +1,211 @@
+<div class="max-w-5xl mx-auto pb-8">
+  <header class="mb-8">
+    <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 mb-2">
+      {{ isEditMode ? 'Editar empresa' : 'Nueva empresa' }}
+    </h1>
+    <p class="text-slate-600 max-w-2xl">
+      {{ isEditMode ? 'Actualiza los datos de la empresa' : 'Registra una nueva empresa en el sistema' }}
+    </p>
+  </header>
+
+  <div class="card">
+    @if (error) {
+      <div class="error-message">{{ error }}</div>
+    }
+
+    @if (isLoading) {
+      <div class="loading-message">Cargando empresa...</div>
+    } @else {
+    <form #companyForm="ngForm" (ngSubmit)="guardar(companyForm)" class="space-y-8">
+      <!-- Identificación -->
+      <section>
+        <div class="section-header">
+          <span class="icon-box">
+            <span class="material-symbols-outlined text-[20px]">business</span>
+          </span>
+          <h2 class="section-title">Identificación</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="form-field">
+            <ui-input id="rutEmpresa" name="rutEmpresa" label="RUT empresa"
+              [(ngModel)]="empresa.rutEmpresa" [required]="true" placeholder="Ej. 76.123.456-K" />
+          </div>
+
+          <div class="form-field">
+            <ui-input id="razonSocial" name="razonSocial" label="Razón social"
+              [(ngModel)]="empresa.razonSocial" [required]="true" placeholder="Razón social legal" />
+          </div>
+
+          <div class="form-field">
+            <ui-input id="nombreFantasia" name="nombreFantasia" label="Nombre fantasía"
+              [(ngModel)]="empresa.nombreFantasia" placeholder="Nombre comercial (opcional)" />
+          </div>
+
+          <div class="form-field">
+            <ui-input id="giro" name="giro" label="Giro"
+              [(ngModel)]="empresa.giro" placeholder="Actividad económica" />
+          </div>
+
+          <div class="form-field md:col-span-2">
+            <label class="mb-1">Empresa activa</label>
+            <div class="toggle-box">
+              <div class="flex flex-col gap-0.5">
+                <span class="text-sm font-bold text-slate-800">Estado en plataforma</span>
+                <span class="text-xs text-slate-500">Por defecto activa</span>
+              </div>
+              <ui-checkbox name="activo" label="Activa" [(ngModel)]="empresa.activo" [fullWidth]="false" />
+            </div>
+          </div>
+
+          <div class="form-field md:col-span-2">
+            <label for="logoEmpresa">Logo de empresa</label>
+            <div class="logo-uploader">
+              <div class="logo-preview">
+                @if (logoPreviewUrl) {
+                  <img [src]="logoPreviewUrl" alt="Logo de empresa" />
+                } @else {
+                  <span class="material-symbols-outlined">image</span>
+                }
+              </div>
+              <div class="logo-actions">
+                <p>PNG o JPG, máximo 1 MB. Se imprimirá automáticamente en el PDF de la factura.</p>
+                <div class="logo-buttons">
+                  <label class="logo-file-button" for="logoEmpresa">
+                    Seleccionar logo
+                  </label>
+                  <input id="logoEmpresa" type="file" accept="image/png,image/jpeg"
+                    (change)="onLogoSelected($event)" />
+                  @if (logoPreviewUrl || hasLogo) {
+                    <button type="button" class="logo-delete-button"
+                      [disabled]="isDeletingLogo" (click)="eliminarLogo()">
+                      {{ isDeletingLogo ? 'Eliminando...' : 'Eliminar logo' }}
+                    </button>
+                  }
+                </div>
+                @if (logoFile) {
+                  <span class="logo-file-name">{{ logoFile.name }}</span>
+                }
+                @if (logoError) {
+                  <span class="logo-error">{{ logoError }}</span>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- Ubicación y contacto -->
+      <section>
+        <div class="section-header">
+          <span class="icon-box">
+            <span class="material-symbols-outlined text-[20px]">location_on</span>
+          </span>
+          <h2 class="section-title">Ubicación y contacto</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="form-field md:col-span-2">
+            <ui-input id="direccion" name="direccion" label="Dirección"
+              [(ngModel)]="empresa.direccion" placeholder="Calle, número, oficina" />
+          </div>
+
+          <div class="form-field">
+            <ui-input id="ciudad" name="ciudad" label="Ciudad"
+              [(ngModel)]="empresa.ciudad" placeholder="Ciudad" />
+          </div>
+
+          <div class="form-field">
+            <ui-input id="comuna" name="comuna" label="Comuna"
+              [(ngModel)]="empresa.comuna" placeholder="Comuna" />
+          </div>
+
+          <div class="form-field">
+            <ui-input id="pais" name="pais" label="País"
+              [(ngModel)]="empresa.pais" placeholder="País" />
+          </div>
+
+          <div class="form-field">
+            <ui-input id="telefono" name="telefono" type="tel" label="Teléfono"
+              [(ngModel)]="empresa.telefono" placeholder="+56 9 1234 5678" />
+          </div>
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- Correos y web -->
+      <section>
+        <div class="section-header">
+          <span class="icon-box">
+            <span class="material-symbols-outlined text-[20px]">mail</span>
+          </span>
+          <h2 class="section-title">Correos y sitio web</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="form-field md:col-span-2">
+            <ui-input id="sitioWeb" name="sitioWeb" type="url" label="Sitio web"
+              [(ngModel)]="empresa.sitioWeb" placeholder="https://www.empresa.cl" />
+          </div>
+
+          <div class="form-field">
+            <ui-input id="emailPrincipal" name="emailPrincipal" type="email" label="Email principal"
+              [(ngModel)]="empresa.emailPrincipal" placeholder="contacto@empresa.cl" />
+          </div>
+
+          <div class="form-field">
+            <ui-input id="emailContabilidad" name="emailContabilidad" type="email" label="Email contabilidad"
+              [(ngModel)]="empresa.emailContabilidad" placeholder="contabilidad@empresa.cl" />
+          </div>
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- Representante -->
+      <section>
+        <div class="section-header">
+          <span class="icon-box">
+            <span class="material-symbols-outlined text-[20px]">badge</span>
+          </span>
+          <h2 class="section-title">Representante legal</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="form-field">
+            <ui-input id="rutRepresentante" name="rutRepresentante" label="RUT representante"
+              [(ngModel)]="empresa.rutRepresentante" placeholder="Ej. 12.345.678-9" />
+          </div>
+
+          <div class="form-field">
+            <ui-input id="nombreRepresentante" name="nombreRepresentante" label="Nombre representante"
+              [(ngModel)]="empresa.nombreRepresentante" placeholder="Nombre completo" />
+          </div>
+
+          <div class="form-field md:col-span-2">
+            <ui-input id="telefonoRepresentante" name="telefonoRepresentante" type="tel"
+              label="Teléfono representante" [(ngModel)]="empresa.telefonoRepresentante"
+              placeholder="+56 9 8765 4321" />
+          </div>
+        </div>
+      </section>
+
+      <div class="actions">
+        <ui-button type="button" variant="secondary" size="lg" (clicked)="cancelar()">
+          Cancelar
+        </ui-button>
+        <ui-button
+          type="button"
+          size="lg"
+          [loading]="isSaving"
+          (clicked)="guardar(companyForm)">
+          {{ isEditMode ? 'Actualizar empresa' : 'Guardar empresa' }}
+        </ui-button>
+      </div>
+    </form>
+    }
+  </div>
+</div>

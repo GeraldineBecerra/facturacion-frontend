@@ -1,0 +1,26 @@
+<header class="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4 mb-8">
+
+  <div>
+
+    <h1 class="text-3xl font-bold text-slate-900">
+      {{ headerTitle }}
+    </h1>
+
+    <p class="text-slate-500 max-w-md mt-1">
+      {{ subtitle }}
+    </p>
+
+  </div>
+
+  @if (buttonLabel) {
+
+    <ui-button (clicked)="buttonClick.emit()">
+      <span class="material-symbols-outlined text-[20px]">
+        add
+      </span>
+      {{ buttonLabel }}
+    </ui-button>
+
+  }
+
+</header>

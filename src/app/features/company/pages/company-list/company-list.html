@@ -1,0 +1,29 @@
+<div class="p-6 md:p-10 space-y-8 bg-slate-100/80 min-h-full">
+
+  <app-page-header
+    headerTitle="Gestión de Empresas"
+    subtitle="Administra las empresas registradas en el sistema"
+    buttonLabel="Nueva Empresa"
+    (buttonClick)="createCompany()">
+  </app-page-header>
+
+  <section class="bg-white border border-slate-200 rounded-2xl p-4 md:p-6 shadow-sm">
+    <div class="flex items-center justify-between mb-4">
+      <p class="text-sm text-slate-500">Visualiza razones sociales, giros y estado de validacion de cada empresa.</p>
+      <span class="text-xs font-semibold px-3 py-1 rounded-full bg-indigo-50 text-indigo-700">
+        {{ companies.length }} registros
+      </span>
+    </div>
+
+    <app-table
+      [columns]="columns"
+      [data]="companies"
+      [actions]="actions"
+      [isLoading]="isLoading"
+      [error]="error"
+      [totalItems]="companies.length"
+      (retry)="loadCompanies()">
+    </app-table>
+  </section>
+
+</div>
