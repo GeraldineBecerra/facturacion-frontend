@@ -1,66 +1,201 @@
-/* CARD */
-
 .card {
-    @apply bg-white/95 rounded-2xl p-8 md:p-10 shadow-sm border border-slate-200;
+  padding: 2rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  background: rgb(255 255 255 / .95);
+  box-shadow: 0 1px 2px rgb(15 23 42 / .05);
 }
 
-/* SECTION */
-
 .section-header {
-    @apply flex items-center gap-3 mb-6;
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  margin-bottom: 1.5rem;
 }
 
 .section-title {
-    @apply text-lg md:text-xl font-bold text-slate-800;
+  color: #1e293b;
+  font-size: 1.125rem;
+  font-weight: 700;
 }
 
 .icon-box {
-    @apply w-9 h-9 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center;
+  display: flex;
+  width: 2.25rem;
+  height: 2.25rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: .75rem;
+  color: #1d4ed8;
+  background: #eff6ff;
 }
 
-/* FORM */
-
 .form-field {
-    @apply flex flex-col gap-2;
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
 }
 
 .form-field label {
-    @apply text-xs font-semibold text-slate-500 uppercase tracking-wider;
+  color: #64748b;
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
 }
-
-.required::after {
-    content: ' *';
-    @apply text-red-500;
-}
-
-/* INPUTS */
-
-.input {
-    @apply w-full rounded-xl px-4 py-3 border border-slate-200 bg-white text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all;
-}
-
-/* DIVIDER */
 
 .divider {
-    @apply h-px bg-slate-200;
+  height: 1px;
+  background: #e2e8f0;
 }
-
-/* TOGGLE */
 
 .toggle-box {
-    @apply flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: .75rem;
+  background: #f8fafc;
 }
-
-/* BUTTONS */
 
 .actions {
-    @apply pt-6 flex flex-col sm:flex-row gap-4 justify-end;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding-top: 1.5rem;
 }
 
-.btn-primary {
-    @apply px-8 py-3 rounded-xl bg-blue-600 text-white font-bold text-sm hover:bg-blue-700 shadow-sm active:scale-95 transition-all;
+.error-message {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border: 1px solid #fecaca;
+  border-radius: .75rem;
+  color: #b91c1c;
+  background: #fef2f2;
+  font-size: .875rem;
 }
 
-.btn-cancel {
-    @apply px-8 py-3 rounded-xl border border-slate-300 text-slate-600 font-bold text-sm hover:bg-slate-100 transition-colors;
+.loading-message {
+  padding: 4rem 0;
+  color: #64748b;
+  text-align: center;
+  font-size: .875rem;
+}
+
+.logo-uploader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: .75rem;
+  background: #f8fafc;
+}
+
+.logo-preview {
+  display: grid;
+  width: 6rem;
+  height: 6rem;
+  flex: none;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: .75rem;
+  color: #94a3b8;
+  background: white;
+}
+
+.logo-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.logo-actions {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: .75rem;
+}
+
+.logo-actions p {
+  color: #64748b;
+  font-size: .875rem;
+}
+
+.logo-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+
+.logo-file-button,
+.logo-delete-button {
+  display: inline-flex;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  border-radius: .5rem;
+  padding: .5rem 1rem;
+  font-size: .875rem;
+  font-weight: 700;
+}
+
+.logo-file-button {
+  color: white;
+  background: #2563eb;
+}
+
+.logo-delete-button {
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  background: white;
+}
+
+.logo-delete-button:disabled {
+  cursor: not-allowed;
+  opacity: .5;
+}
+
+.logo-buttons input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+
+.logo-file-name {
+  overflow: hidden;
+  color: #475569;
+  font-size: .75rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.logo-error {
+  color: #dc2626;
+  font-size: .875rem;
+  font-weight: 700;
+}
+
+@media (min-width: 768px) {
+  .card {
+    padding: 2.5rem;
+  }
+
+  .section-title {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .actions,
+  .logo-uploader {
+    align-items: stretch;
+    flex-direction: column;
+  }
 }

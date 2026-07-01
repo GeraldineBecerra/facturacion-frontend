@@ -1,0 +1,41 @@
+<div class="audit-page">
+  <app-page-header
+    headerTitle="Auditoría"
+    subtitle="Revisa los últimos 200 cambios registrados por el sistema."
+  />
+
+  <section class="filters">
+    <ui-input name="auditSearch" label="Buscar evento"
+      placeholder="Módulo, acción, usuario o detalle"
+      [(ngModel)]="filters.search" (ngModelChange)="filter()" />
+
+    <div class="select-field">
+      <label for="auditAction">Acción</label>
+      <select id="auditAction" name="auditAction" [(ngModel)]="filters.action"
+        (ngModelChange)="filter()">
+        <option value="">Todas</option>
+        @for (action of actions; track action) {
+          <option [value]="action">{{ action }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="filter-actions">
+      <ui-button variant="secondary" (clicked)="clearFilters()">Limpiar</ui-button>
+      <ui-button (clicked)="loadRecords()">Actualizar</ui-button>
+    </div>
+  </section>
+
+  <section class="table-card">
+    <div class="table-heading">
+      <div>
+        <h2>Registro de actividad</h2>
+        <p>{{ filteredRecords.length }} eventos encontrados</p>
+      </div>
+    </div>
+    <app-table [columns]="columns" [data]="filteredRecords"
+      [isLoading]="isLoading" [error]="error"
+      [totalItems]="filteredRecords.length"
+      (retry)="loadRecords()" />
+  </section>
+</div>

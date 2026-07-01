@@ -1,0 +1,39 @@
+.login-page { display: grid; min-height: 100vh; grid-template-columns: minmax(22rem,.9fr) minmax(30rem,1.1fr); background: #f8fafc; }
+.brand-panel { position: relative; display: flex; padding: 3rem 4rem; align-items: center; justify-content: center; overflow: hidden; background: linear-gradient(145deg,#172554,#1d4ed8); color: white; }
+.brand-content { width: min(100%,42rem); }
+.brand-mark { display: grid; width: 4rem; height: 4rem; margin-bottom: 2rem; place-items: center; border-radius: 1rem; background: rgb(255 255 255/.14); font-size: 2rem; }
+.eyebrow { margin: 0 0 .5rem; font-size: .75rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.brand-panel h1 { margin: 0; font-size: clamp(2.5rem,5vw,4.5rem); font-weight: 800; line-height: 1; }
+.brand-description { max-width: 32rem; margin-top: 1.5rem; color: rgb(255 255 255/.72); line-height: 1.7; }
+.billing-visual { position: relative; width: min(100%,42rem); margin: 1.5rem auto 0; overflow: hidden; border: 1px solid rgb(255 255 255/.12); border-radius: 1.5rem; background: rgb(255 255 255/.06); box-shadow: 0 30px 70px rgb(2 6 23/.3); }
+.billing-visual::after { position: absolute; inset: 0; content: ''; pointer-events: none; background: linear-gradient(180deg,transparent 65%,rgb(23 37 84/.42)); }
+.billing-visual img { display: block; width: 100%; aspect-ratio: 3/2; object-fit: cover; mix-blend-mode: screen; }
+.security-note { position: absolute; bottom: 2rem; left: 4rem; display: flex; align-items: center; gap: .75rem; color: rgb(255 255 255/.7); font-size: .875rem; }
+.form-panel { display: grid; padding: 2rem; place-items: center; }
+.login-card { width: min(100%,28rem); padding: 2.5rem; border: 1px solid #e2e8f0; border-radius: 1.25rem; background: white; box-shadow: 0 20px 50px rgb(15 23 42/.08); }
+.login-card header { margin-bottom: 2rem; }
+.login-card h2 { margin: 0; color: #0f172a; font-size: 2rem; font-weight: 800; }
+.login-card header > p:last-child { margin-top: .5rem; color: #64748b; }
+.login-card form { display: grid; gap: 1.25rem; }
+.login-error { margin-bottom: 1.25rem; padding: .875rem 1rem; border: 1px solid #fecaca; border-radius: .75rem; background: #fef2f2; color: #b91c1c; font-size: .875rem; }
+.password-field { position: relative; }
+.password-toggle { position: absolute; top: 2rem; right: .75rem; display: grid; width: 2rem; height: 2rem; place-items: center; border-radius: .5rem; color: #64748b; }
+.password-toggle:hover { background: #f1f5f9; color: #2563eb; }
+@media (max-width:850px) {
+  .login-page { grid-template-columns: 1fr; }
+  .brand-panel { min-height: 18rem; padding: 2rem; }
+  .brand-content { width: min(100%,32rem); }
+  .billing-visual { max-width: 32rem; }
+  .security-note { display: none; }
+}
+
+@media (max-width:560px) {
+  .billing-visual { display: none; }
+}
+
+@media (max-height:800px) and (min-width:851px) {
+  .brand-panel { padding-block: 2rem; }
+  .brand-mark { margin-bottom: 1rem; }
+  .brand-description { margin-top: .75rem; }
+  .billing-visual { width: min(100%,34rem); margin-top: 1rem; }
+}

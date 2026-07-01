@@ -1,0 +1,40 @@
+<div class="products-page">
+  <app-page-header
+    headerTitle="Gestión de Productos"
+    subtitle="Administra el catálogo disponible para tus documentos tributarios."
+    buttonLabel="Nuevo Producto"
+    (buttonClick)="createProduct()"
+  />
+
+  <section class="filter-card">
+    <ui-input
+      name="productSearch"
+      label="Buscar producto"
+      placeholder="Código, nombre, descripción o unidad"
+      [(ngModel)]="searchTerm"
+      (ngModelChange)="applyFilter()"
+    />
+    <div class="filter-actions">
+      <ui-button variant="secondary" (clicked)="clearFilter()">Limpiar</ui-button>
+    </div>
+  </section>
+
+  <section class="table-card">
+    <div class="table-heading">
+      <div>
+        <h2>Productos registrados</h2>
+        <p>{{ filteredProducts.length }} productos encontrados</p>
+      </div>
+    </div>
+
+    <app-table
+      [columns]="columns"
+      [data]="filteredProducts"
+      [actions]="actions"
+      [isLoading]="isLoading"
+      [error]="error"
+      [totalItems]="filteredProducts.length"
+      (retry)="loadProducts()"
+    />
+  </section>
+</div>

@@ -60,6 +60,7 @@ export class DynamicTableComponent<T = any> {
   // Signals
   sortColumn = signal<string | null>(null);
   sortDirection = signal<'asc' | 'desc'>('asc');
+  localPage = signal(1);
 
   Math = Math;
 
@@ -70,9 +71,29 @@ export class DynamicTableComponent<T = any> {
     Math.ceil(this.effectiveTotalItems() / Math.max(this.pageSize(), 1))
   );
 
+  effectiveCurrentPage = computed(() => {
+    const page = this.currentPage() > 1 ? this.currentPage() : this.localPage();
+    return Math.min(Math.max(page, 1), Math.max(this.totalPages(), 1));
+  });
+
+  shouldPaginateLocally = computed(() =>
+    this.showPagination() &&
+    this.totalPages() > 1 &&
+    this.effectiveTotalItems() === this.data().length
+  );
+
+  paginatedData = computed(() => {
+    if (!this.shouldPaginateLocally()) return this.data();
+
+    const size = Math.max(this.pageSize(), 1);
+    const start = (this.effectiveCurrentPage() - 1) * size;
+
+    return this.data().slice(start, start + size);
+  });
+
   pages = computed(() => {
     const total = this.totalPages();
-    const current = this.currentPage();
+    const current = this.effectiveCurrentPage();
     const delta = 2;
 
     const range: number[] = [];
@@ -92,6 +113,7 @@ export class DynamicTableComponent<T = any> {
 
   onPageChange(page: number) {
     if (page < 1 || page > this.totalPages()) return;
+    this.localPage.set(page);
     this.pageChange.emit(page);
   }
 

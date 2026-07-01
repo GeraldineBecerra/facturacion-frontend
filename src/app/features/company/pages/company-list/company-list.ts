@@ -1,55 +1,92 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { finalize } from 'rxjs';
 import {
-    DynamicTableComponent,
-    TableColumn,
+  DynamicTableComponent,
+  TableAction,
+  TableColumn,
 } from '../../../../shared/components/table/table';
 import { PageHeaderComponent } from '../../../../shared/components/header/page-header.component';
+import { CompanyResponse } from '../../models/company.model';
+import { CompanyService } from '../../services/company.service';
 
 @Component({
-    selector: 'app-companies',
-    standalone: true,
-    imports: [DynamicTableComponent, PageHeaderComponent],
-    templateUrl: './company-list.html'
+  selector: 'app-companies',
+  standalone: true,
+  imports: [DynamicTableComponent, PageHeaderComponent],
+  templateUrl: './company-list.html',
 })
-export class CompaniesList {
+export class CompaniesList implements OnInit {
+  companies: CompanyResponse[] = [];
+  isLoading = false;
+  error: string | null = null;
 
-    constructor(private router: Router) {}
+  columns: TableColumn[] = [
+    { key: 'rutEmpresa', label: 'RUT' },
+    { key: 'razonSocial', label: 'Razón social', type: 'avatar', avatarKey: 'nombreFantasia' },
+    { key: 'giro', label: 'Giro' },
+    {
+      key: 'activo',
+      label: 'Estado',
+      type: 'boolean',
+      trueLabel: 'Activa',
+      falseLabel: 'Inactiva',
+    },
+    { key: 'createdAt', label: 'Creación', type: 'date' },
+  ];
 
-    columns: TableColumn[] = [
-        { key: 'id', label: 'ID' },
-        { key: 'rut', label: 'RUT' },
-        { key: 'name', label: 'Razón Social' },
-        { key: 'giro', label: 'Giro' },
-        {
-            key: 'status',
-            label: 'Estado',
-            type: 'badge',
-            badgeColors: {
-                Active: 'bg-emerald-100 text-emerald-800',
-                Verified: 'bg-blue-100 text-blue-800',
-            },
+  actions: TableAction[] = [
+    {
+      type: 'edit',
+      label: 'Editar empresa',
+      icon: 'edit',
+      routerLinkFn: (company) => ['/empresas', company.id, 'editar'],
+    },
+    {
+      type: 'custom',
+      label: 'Cambiar estado',
+      clickFn: (company) => this.toggleStatus(company),
+      colorClass: 'text-amber-600 hover:bg-amber-50',
+    },
+  ];
+
+  constructor(
+    private router: Router,
+    private companyService: CompanyService,
+  ) {}
+
+  ngOnInit(): void {
+    this.loadCompanies();
+  }
+
+  loadCompanies(): void {
+    this.isLoading = true;
+    this.error = null;
+
+    this.companyService.findAll()
+      .pipe(finalize(() => this.isLoading = false))
+      .subscribe({
+        next: (companies) => this.companies = companies,
+        error: () => {
+          this.error = 'No fue posible cargar las empresas. Verifica que el backend esté ejecutándose.';
         },
-    ];
+      });
+  }
 
-    data = [
-        {
-            id: 'VL-7821',
-            rut: '76.334.890-K',
-            name: 'Global Logistics',
-            giro: 'Transporte',
-            status: 'Active'
-        },
-        {
-            id: 'VL-9012',
-            rut: '77.102.445-5',
-            name: 'Innovatech',
-            giro: 'Ingeniería',
-            status: 'Verified'
-        }
-    ];
-    
-    createCompany() {
-        this.router.navigate(['/empresas/nueva']);
-    }
+  createCompany(): void {
+    this.router.navigate(['/empresas/nueva']);
+  }
+
+  toggleStatus(company: CompanyResponse): void {
+    this.companyService.changeStatus(company.id, !company.activo).subscribe({
+      next: (updatedCompany) => {
+        this.companies = this.companies.map((item) =>
+          item.id === updatedCompany.id ? updatedCompany : item
+        );
+      },
+      error: () => {
+        this.error = 'No fue posible cambiar el estado de la empresa.';
+      },
+    });
+  }
 }

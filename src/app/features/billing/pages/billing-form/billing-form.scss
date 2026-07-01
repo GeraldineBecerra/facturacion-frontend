@@ -45,3 +45,41 @@
   .form-grid, .compact-grid { grid-template-columns: 1fr; }
   .heading-actions { margin-top: 0; justify-content: flex-start; }
 }
+.file-picker.importing {
+  opacity: .65;
+  pointer-events: none;
+}
+
+.import-message {
+  width: 100%;
+  margin-top: .75rem;
+  padding: .75rem 1rem;
+  border: 1px solid;
+  border-radius: .75rem;
+  font-size: .8rem;
+  line-height: 1.45;
+}
+
+.import-message.success {
+  border-color: #bbf7d0;
+  color: #15803d;
+  background: #f0fdf4;
+}
+
+.import-message.error {
+  border-color: #fecaca;
+  color: #b91c1c;
+  background: #fef2f2;
+}
+
+.import-message.warning {
+  border-color: #fde68a;
+  color: #92400e;
+  background: #fffbeb;
+}
+
+.import-message ul {
+  margin-top: .35rem;
+  padding-left: 1rem;
+  list-style: disc;
+}

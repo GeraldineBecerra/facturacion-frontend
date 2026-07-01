@@ -1,138 +1,97 @@
-import { Component } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { finalize } from 'rxjs';
 import { PageHeaderComponent } from '../../../../shared/components/header/page-header.component';
 import {
-    DynamicTableComponent,
-    TableAction,
-    TableColumn,
+  DynamicTableComponent,
+  TableAction,
+  TableColumn,
 } from '../../../../shared/components/table/table';
-import { Router } from '@angular/router';
+import { UserResponse } from '../../models/user.model';
+import { UserService } from '../../services/user.service';
 
 @Component({
-    selector: 'app-user-management',
-    standalone: true,
-    imports: [
-    PageHeaderComponent,
-    DynamicTableComponent
-],
-    templateUrl: './user-list.html'
+  selector: 'app-user-management',
+  standalone: true,
+  imports: [PageHeaderComponent, DynamicTableComponent],
+  templateUrl: './user-list.html',
 })
-export class UserList {
-    constructor(private router: Router) { }
-    columns: TableColumn[] = [
-        { key: 'name', label: 'Nombre' },
-        { key: 'email', label: 'Email' },
-        { key: 'role', label: 'Rol' },
-        {
-            key: 'status',
-            label: 'Estado',
-            type: 'badge',
-            badgeColors: {
-                Active: 'bg-emerald-100 text-emerald-800',
-                Suspended: 'bg-amber-100 text-amber-800',
-            },
-        },
-    ];
+export class UserList implements OnInit {
+  users: UserResponse[] = [];
+  isLoading = false;
+  error: string | null = null;
 
-    actions: TableAction[] = [
-        {
-            type: 'custom',
-            label: 'Editar',
-            icon: 'edit',
-            clickFn: (user) => this.editUser(user),
-            colorClass: 'text-blue-600 hover:bg-blue-50',
-        },
-        {
-            type: 'delete',
-            label: 'Eliminar',
-            clickFn: (user) => this.deleteUser(user),
-        },
-    ];
-    users = [
-        {
-            name: 'Adrian Holovaty',
-            email: 'adrian.h@cobalt.enterprise',
-            role: 'Administrator',
-            status: 'Active'
-        },
-        {
-            name: 'Beatriz Soler',
-            email: 'beatriz.s@cobalt.enterprise',
-            role: 'Developer',
-            status: 'Active'
-        },
-        {
-            name: "Carlos D'Alessio",
-            email: 'carlos.d@cobalt.enterprise',
-            role: 'Security Auditor',
-            status: 'Suspended'
-        },
-        {
-            name: 'Elena Llopis',
-            email: 'elena.l@cobalt.enterprise',
-            role: 'Analyst',
-            status: 'Active'
-        },
-        {
-            name: 'Adrian Holovaty',
-            email: 'adrian.h@cobalt.enterprise',
-            role: 'Administrator',
-            status: 'Active'
-        },
-        {
-            name: 'Beatriz Soler',
-            email: 'beatriz.s@cobalt.enterprise',
-            role: 'Developer',
-            status: 'Active'
-        },
-        {
-            name: "Carlos D'Alessio",
-            email: 'carlos.d@cobalt.enterprise',
-            role: 'Security Auditor',
-            status: 'Suspended'
-        },
-        {
-            name: 'Elena Llopis',
-            email: 'elena.l@cobalt.enterprise',
-            role: 'Analyst',
-            status: 'Active'
-        },
-        {
-            name: 'Adrian Holovaty',
-            email: 'adrian.h@cobalt.enterprise',
-            role: 'Administrator',
-            status: 'Active'
-        },
-        {
-            name: 'Beatriz Soler',
-            email: 'beatriz.s@cobalt.enterprise',
-            role: 'Developer',
-            status: 'Active'
-        },
-        {
-            name: "Carlos D'Alessio",
-            email: 'carlos.d@cobalt.enterprise',
-            role: 'Security Auditor',
-            status: 'Suspended'
-        },
-        {
-            name: 'Elena Llopis',
-            email: 'elena.l@cobalt.enterprise',
-            role: 'Analyst',
-            status: 'Active'
-        }
-    ];
+  columns: TableColumn[] = [
+    { key: 'id', label: 'ID', sortable: true },
+    { key: 'username', label: 'Usuario', type: 'avatar' },
+    {
+      key: 'rolMostrar',
+      label: 'Rol',
+      formatter: (value, user: UserResponse) => value || user.rol || 'Sin rol',
+    },
+    {
+      key: 'activo',
+      label: 'Estado',
+      type: 'boolean',
+      trueLabel: 'Activo',
+      falseLabel: 'Inactivo',
+    },
+    { key: 'createdAt', label: 'Creación', type: 'date' },
+    { key: 'updatedAt', label: 'Actualización', type: 'date' },
+  ];
 
-    createUser() {
-        this.router.navigate(['/usuarios/nuevo']);
-    }
+  actions: TableAction[] = [
+    {
+      type: 'custom',
+      label: 'Cambiar estado',
+      clickFn: (user) => this.toggleStatus(user),
+      colorClass: 'text-amber-600 hover:bg-amber-50',
+    },
+  ];
 
+  constructor(
+    private router: Router,
+    private userService: UserService,
+  ) {}
 
-    editUser(user: any) {
-        console.log('Editar usuario', user);
-    }
+  ngOnInit(): void {
+    this.loadUsers();
+  }
 
-    deleteUser(user: any) {
-        console.log('Eliminar usuario', user);
-    }
+  loadUsers(): void {
+    this.isLoading = true;
+    this.error = null;
 
+    this.userService.findAll()
+      .pipe(finalize(() => this.isLoading = false))
+      .subscribe({
+        next: (users) => this.users = users,
+        error: (error: HttpErrorResponse) => {
+          this.users = [];
+          this.error = error.status === 401 || error.status === 403
+            ? 'Debes iniciar sesión con un JWT válido para consultar los usuarios.'
+            : 'No fue posible cargar los usuarios desde el backend.';
+        },
+      });
+  }
+
+  createUser(): void {
+    this.router.navigate(['/usuarios/nuevo']);
+  }
+
+  toggleStatus(user: UserResponse): void {
+    this.userService.changeStatus(user.id, !user.activo).subscribe({
+      next: (updatedUser) => {
+        this.users = this.users.map((item) =>
+          item.id === updatedUser.id ? updatedUser : item
+        );
+      },
+      error: (error: HttpErrorResponse) => {
+        this.error = error.status === 401 || error.status === 403
+          ? 'Tu sesión no permite cambiar el estado del usuario.'
+          : 'No fue posible cambiar el estado del usuario.';
+      },
+    });
+  }
 }

@@ -1,0 +1,49 @@
+<div class="product-form-page">
+  <header>
+    <h1>{{ isEditMode ? 'Editar producto' : 'Nuevo producto' }}</h1>
+    <p>Completa los datos que se utilizarán al agregar ítems a una factura.</p>
+  </header>
+
+  <section class="form-card">
+    @if (error) {
+      <div class="error-message">{{ error }}</div>
+    }
+
+    @if (isLoading) {
+      <p class="loading-message">Cargando producto...</p>
+    } @else {
+      <form #productForm="ngForm" (ngSubmit)="save(productForm)">
+        <div class="form-grid">
+          <ui-input id="codigo" name="codigo" label="Código" placeholder="Ej. PROD-001"
+            [(ngModel)]="product.codigo" [required]="true" />
+          <ui-input id="nombre" name="nombre" label="Nombre" placeholder="Nombre del producto"
+            [(ngModel)]="product.nombre" [required]="true" />
+          <ui-input id="unidadMedida" name="unidadMedida" label="Unidad de medida"
+            placeholder="Ej. UN, KG, HR" [(ngModel)]="product.unidadMedida" />
+          <ui-input id="precio" name="precio" type="number" label="Precio neto"
+            [(ngModel)]="product.precio" [required]="true" />
+
+          <div class="description-field">
+            <label for="descripcion">Descripción</label>
+            <textarea id="descripcion" name="descripcion" rows="4"
+              [(ngModel)]="product.descripcion" placeholder="Detalle opcional del producto"></textarea>
+          </div>
+
+          <div class="status-box">
+            <ui-checkbox name="afectaIva" label="Producto afecto a IVA"
+              [(ngModel)]="product.afectaIva" />
+            <ui-checkbox name="activo" label="Producto activo"
+              [(ngModel)]="product.activo" />
+          </div>
+        </div>
+
+        <div class="actions">
+          <ui-button variant="secondary" size="lg" (clicked)="cancel()">Cancelar</ui-button>
+          <ui-button type="submit" size="lg" [loading]="isSaving">
+            {{ isEditMode ? 'Actualizar producto' : 'Guardar producto' }}
+          </ui-button>
+        </div>
+      </form>
+    }
+  </section>
+</div>
