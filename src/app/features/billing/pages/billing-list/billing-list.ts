@@ -39,6 +39,12 @@ export class BillingList implements OnInit {
     },
     { key: 'tipoDocumento', label: 'Tipo DTE' },
     { key: 'fechaEmision', label: 'Emisión', type: 'date' },
+    {
+      key: 'usuarioEmisor',
+      label: 'Emitido por',
+      formatter: (value, document: BillingDocument) =>
+        value || (this.getDocumentStatus(document) === 'BORRADOR' ? 'Sin emitir' : 'No registrado'),
+    },
     { key: 'clienteRazonSocial', label: 'Cliente', type: 'avatar', avatarKey: 'clienteRut' },
     {
       key: 'montoTotal',
@@ -61,12 +67,29 @@ export class BillingList implements OnInit {
     },
   ];
 
-  actions: TableAction[] = [{
-    type: 'custom',
-    label: 'Ver documento',
-    clickFn: (document) => this.viewDocument(document),
-    colorClass: 'text-blue-600 hover:bg-blue-50',
-  }];
+  actions: TableAction[] = [
+    // {
+    //   type: 'custom',
+    //   label: 'Ver documento',
+    //   icon: 'view',
+    //   clickFn: (document) => this.viewDocument(document),
+    //   colorClass: 'text-blue-600 hover:bg-blue-50',
+    // },
+    {
+      type: 'custom',
+      label: 'Descargar PDF',
+      icon: 'picture-as-pdf',
+      clickFn: (document) => this.downloadPdf(document),
+      colorClass: 'text-red-600 hover:bg-red-50',
+    },
+    // {
+    //   type: 'custom',
+    //   label: 'Descargar TXT',
+    //   icon: 'file-text',
+    //   clickFn: (document) => this.downloadTxt(document),
+    //   colorClass: 'text-slate-600 hover:bg-slate-100',
+    // },
+  ];
 
   constructor(private router: Router, private billingService: BillingService) {}
 
@@ -123,12 +146,35 @@ export class BillingList implements OnInit {
     this.router.navigate(['/facturacion', document.id]);
   }
 
+  downloadPdf(document: BillingDocument): void {
+    this.billingService.downloadPdf(document.id).subscribe({
+      next: (blob) => this.saveBlob(blob, `documento-${document.id}.pdf`),
+      error: () => this.error = 'No fue posible descargar el PDF del documento.',
+    });
+  }
+
+  downloadTxt(document: BillingDocument): void {
+    this.billingService.downloadTxt(document.id).subscribe({
+      next: (blob) => this.saveBlob(blob, `documento-${document.id}.txt`),
+      error: () => this.error = 'No fue posible descargar el TXT del documento.',
+    });
+  }
+
   getInvoiceNumber(document: BillingDocument): string {
     return String(document.folio ?? document.numeroDocumento ?? document.numeroFactura ?? 'Sin folio');
   }
 
   getDocumentStatus(document: BillingDocument): string {
-    const status = document.estadoDocumento ?? document.estadoSii ?? document.estado ?? 'BORRADOR';
+    const status = document.estadoDocumento ?? document.estado ?? document.estadoSii ?? 'BORRADOR';
     return status.toUpperCase();
+  }
+
+  private saveBlob(blob: Blob, fileName: string): void {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    link.click();
+    URL.revokeObjectURL(url);
   }
 }

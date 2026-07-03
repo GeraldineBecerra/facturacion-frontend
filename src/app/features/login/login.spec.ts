@@ -7,7 +7,6 @@ import { Login } from './login';
 describe('Login module', () => {
   let auth: jasmine.SpyObj<AuthService>;
   let router: jasmine.SpyObj<Router>;
-  let route: any;
   let component: Login;
 
   beforeEach(() => {
@@ -18,36 +17,39 @@ describe('Login module', () => {
       'role',
     ]);
     router = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
-    route = {
-      snapshot: {
-        queryParamMap: {
-          get: jasmine.createSpy('get').and.returnValue('/clientes'),
-        },
-      },
-    };
-    component = new Login(auth, route, router);
+    component = new Login(auth, router);
   });
 
   it('redirects authenticated users to their landing route', () => {
     auth.isAuthenticated.and.returnValue(true);
-    auth.landingRoute.and.returnValue('/facturacion');
+    auth.landingRoute.and.returnValue('/dashboard/admin');
 
     component.ngOnInit();
 
-    expect(router.navigateByUrl).toHaveBeenCalledWith('/facturacion');
+    expect(router.navigateByUrl).toHaveBeenCalledWith('/dashboard/admin');
   });
 
-  it('logs in and respects a valid returnUrl for normal users', () => {
+  it('logs in and sends users to their landing dashboard', () => {
     auth.login.and.returnValue(of({ token: 'jwt' } as any));
-    auth.role.and.returnValue('ROLE_USER');
+    auth.landingRoute.and.returnValue('/dashboard/admin');
     const form = { invalid: false, control: { markAllAsTouched: jasmine.createSpy('touch') } } as unknown as NgForm;
 
     component.credentials = { username: 'ana', password: 'secret' };
     component.submit(form);
 
     expect(auth.login).toHaveBeenCalledWith(component.credentials, true);
-    expect(router.navigateByUrl).toHaveBeenCalledWith('/clientes');
+    expect(router.navigateByUrl).toHaveBeenCalledWith('/dashboard/admin');
     expect(component.isLoading).toBeFalse();
+  });
+
+  it('sends super admins directly to their dashboard', () => {
+    auth.login.and.returnValue(of({ token: 'jwt' } as any));
+    auth.landingRoute.and.returnValue('/dashboard/super-admin');
+    const form = { invalid: false, control: { markAllAsTouched: jasmine.createSpy('touch') } } as unknown as NgForm;
+
+    component.submit(form);
+
+    expect(router.navigateByUrl).toHaveBeenCalledWith('/dashboard/super-admin');
   });
 
   it('shows backend login errors', () => {

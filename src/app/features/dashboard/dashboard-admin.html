@@ -1,0 +1,153 @@
+<section class="dashboard-shell">
+  <header class="dashboard-header">
+    <div>
+      <p class="eyebrow">Empresa activa</p>
+      <h1>Dashboard operativo</h1>
+      <p class="subtitle">Resumen de facturación, folios, clientes y tareas pendientes.</p>
+    </div>
+
+    <div class="header-actions">
+      <a routerLink="/facturacion/nueva" class="primary-action">
+        <span class="material-symbols-outlined">add</span>
+        Nueva factura
+      </a>
+      <a routerLink="/clientes/nuevo" class="secondary-action">
+        <span class="material-symbols-outlined">person_add</span>
+        Nuevo cliente
+      </a>
+    </div>
+  </header>
+
+  @if (isLoading) {
+    <div class="dashboard-state">Cargando indicadores reales...</div>
+  }
+
+  @if (errorMessage) {
+    <div class="dashboard-state dashboard-state--error">{{ errorMessage }}</div>
+  }
+
+  <div class="metric-grid">
+    @for (metric of metrics; track metric.label) {
+      <article class="metric-card" [class.metric-card--alert]="metric.tone === 'alert'">
+        <div class="metric-icon">
+          <span class="material-symbols-outlined">{{ metric.icon }}</span>
+        </div>
+        <div>
+          <p>{{ metric.label }}</p>
+          <strong>{{ metric.value }}</strong>
+          <span>{{ metric.detail }}</span>
+        </div>
+      </article>
+    }
+  </div>
+
+  <div class="dashboard-grid">
+    <section class="panel panel--wide">
+      <div class="panel-header">
+        <div>
+          <h2>Documentos recientes</h2>
+          <p>Últimos movimientos de la empresa seleccionada.</p>
+        </div>
+        <a routerLink="/facturacion">Ver todos</a>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Documento</th>
+              <th>Cliente</th>
+              <th>Monto</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (document of recentDocuments; track document.id) {
+              <tr>
+                <td>
+                  <strong>{{ document.id }}</strong>
+                  <span>{{ document.date }}</span>
+                </td>
+                <td>{{ document.client }}</td>
+                <td>{{ document.amount }}</td>
+                <td>
+                  <span class="status-pill" [class.status-pill--warning]="document.status === 'Borrador'" [class.status-pill--error]="document.status === 'Error'">
+                    {{ document.status }}
+                  </span>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="4" class="empty-cell">No hay documentos recientes para mostrar.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>Alertas</h2>
+          <p>Acciones recomendadas.</p>
+        </div>
+      </div>
+
+      <div class="alert-list">
+        @for (alert of alerts; track alert.title) {
+          <article class="alert-item" [class.alert-item--danger]="alert.tone === 'danger'">
+            <span class="material-symbols-outlined">{{ alert.icon }}</span>
+            <div>
+              <strong>{{ alert.title }}</strong>
+              <p>{{ alert.description }}</p>
+            </div>
+          </article>
+        }
+      </div>
+    </aside>
+
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>Folios disponibles</h2>
+          <p>Control por tipo de documento.</p>
+        </div>
+      </div>
+
+      <div class="folio-list">
+        @for (folio of folios; track folio.name) {
+          <div class="folio-item">
+            <div class="folio-info">
+              <strong>{{ folio.name }}</strong>
+              <span>{{ folio.available }} disponibles de {{ folio.total }}</span>
+            </div>
+            <div class="progress-track">
+              <span [style.width.%]="folio.percent"></span>
+            </div>
+          </div>
+        } @empty {
+          <p class="empty-text">No hay folios activos para esta empresa.</p>
+        }
+      </div>
+    </section>
+
+    <!-- <section class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>Accesos rápidos</h2>
+          <p>Operaciones frecuentes.</p>
+        </div>
+      </div>
+
+      <div class="quick-actions">
+        @for (action of quickActions; track action.label) {
+          <a [routerLink]="action.route">
+            <span class="material-symbols-outlined">{{ action.icon }}</span>
+            {{ action.label }}
+          </a>
+        }
+      </div>
+    </section> -->
+  </div>
+</section>

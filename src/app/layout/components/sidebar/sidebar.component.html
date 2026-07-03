@@ -8,6 +8,14 @@
     </div>
 
     <nav class="flex flex-col gap-2 flex-1">
+      @if (auth.hasAnyRole(['ROLE_SUPER_ADMIN', 'ROLE_ADMIN', 'ROLE_USER'])) {
+      <a [routerLink]="dashboardRoute()" routerLinkActive="bg-slate-100 text-blue-600"
+        class="h-10 px-3 rounded-xl flex items-center gap-3 text-sm text-slate-600 hover:bg-slate-100 transition-colors">
+        <lucide-icon [img]="LayoutGrid" class="w-4 h-4 shrink-0"></lucide-icon>
+        @if (!collapsed) { <span>Dashboard</span> }
+      </a>
+      }
+
       @if (auth.hasAnyRole(['ROLE_SUPER_ADMIN', 'ROLE_ADMIN'])) {
       <a routerLink="/usuarios" routerLinkActive="bg-slate-100 text-blue-600"
         class="h-10 px-3 rounded-xl flex items-center gap-3 text-sm text-slate-600 hover:bg-slate-100 transition-colors">
@@ -52,7 +60,7 @@
       <a routerLink="/facturacion" routerLinkActive="bg-slate-100 text-blue-600"
         class="h-10 px-3 rounded-xl flex items-center gap-3 text-sm text-slate-600 hover:bg-slate-100 transition-colors">
         <lucide-icon [img]="FileBarChart2" class="w-4 h-4 shrink-0"></lucide-icon>
-        @if (!collapsed) { <span>Facturación</span> }
+        @if (!collapsed) { <span>Facturacion</span> }
       </a>
       }
 
@@ -76,16 +84,8 @@
       <a routerLink="/auditoria" routerLinkActive="bg-slate-100 text-blue-600"
         class="h-10 px-3 rounded-xl flex items-center gap-3 text-sm text-slate-600 hover:bg-slate-100 transition-colors">
         <lucide-icon [img]="ScrollText" class="w-4 h-4 shrink-0"></lucide-icon>
-        @if (!collapsed) { <span>Auditoría</span> }
+        @if (!collapsed) { <span>Auditoria</span> }
       </a>
-      }
-
-      @if (auth.hasAnyRole(['ROLE_SUPER_ADMIN'])) {
-      <button
-        class="h-10 px-3 rounded-xl flex items-center gap-3 text-sm text-slate-500 hover:bg-slate-100 transition-colors">
-        <lucide-icon [img]="LayoutGrid" class="w-4 h-4 shrink-0"></lucide-icon>
-        @if (!collapsed) { <span>Dashboard</span> }
-      </button>
       }
     </nav>
 
@@ -104,16 +104,16 @@
         @if (!collapsed) { <span>Perfil</span> }
       </a>
 
-      <button
+      <!-- <button
         class="w-full h-10 px-3 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
         <lucide-icon [img]="FileBarChart2" class="w-4 h-4"></lucide-icon>
         @if (!collapsed) { <span>Reporte</span> }
-      </button>
+      </button> -->
 
       <button type="button" (click)="logout()"
         class="w-full h-10 px-3 rounded-xl text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2">
         <span class="material-symbols-outlined text-[18px]">logout</span>
-        @if (!collapsed) { <span>Cerrar sesión</span> }
+        @if (!collapsed) { <span>Cerrar sesion</span> }
       </button>
 
       <button

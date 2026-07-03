@@ -14,7 +14,7 @@ describe('Folio module', () => {
     rangoHasta: 100,
     fechaAutorizacion: '2026-06-01',
     fechaVencimiento: null,
-    estado: 'ACTIVO',
+    estado: 'DISPONIBLE',
     foliosGenerados: 100,
     foliosDisponibles: 99,
   };
@@ -26,7 +26,7 @@ describe('Folio module', () => {
     rangoDesde: 1,
     rangoHasta: 100,
     ultimoFolioUtilizado: 1,
-    estadoCaf: 'ACTIVO',
+    estadoCaf: 'DISPONIBLE',
   };
 
   it('loads document types, CAFs and folio controls', () => {
@@ -45,6 +45,8 @@ describe('Folio module', () => {
     expect(component.documentTypes).toEqual([documentType]);
     expect(component.cafs).toEqual([caf]);
     expect(component.controls).toEqual([control]);
+    expect(component.metricCards[0].available).toBe(99);
+    expect(component.metricCards[0].status).toBe('ok');
   });
 
   it('uploads a CAF and reloads data', () => {

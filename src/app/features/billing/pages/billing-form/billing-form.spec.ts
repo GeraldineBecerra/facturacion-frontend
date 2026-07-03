@@ -46,7 +46,12 @@ describe('Billing form module', () => {
 
   beforeEach(() => {
     router = jasmine.createSpyObj<Router>('Router', ['navigate']);
-    billingService = jasmine.createSpyObj<BillingService>('BillingService', ['previewTxt', 'importTxt', 'downloadPdf']);
+    billingService = jasmine.createSpyObj<BillingService>('BillingService', [
+      'previewTxt',
+      'importTxt',
+      'emitDocument',
+      'downloadPdf',
+    ]);
     customerService = jasmine.createSpyObj<CustomerService>('CustomerService', ['findById']);
     component = new BillingForm(router, billingService, customerService);
   });
@@ -72,7 +77,7 @@ describe('Billing form module', () => {
     component.onFileSelected({ target: input } as unknown as Event);
 
     expect(component.selectedImportFile).toBe(file);
-    expect(component.importSuccess).toContain('Guardar factura');
+    expect(component.importSuccess).toContain('Emitir factura');
     expect(component.billing.rutReceptor).toBe(customer.rut);
     expect(billingService.importTxt).not.toHaveBeenCalled();
     expect(billingService.downloadPdf).not.toHaveBeenCalled();
@@ -89,13 +94,24 @@ describe('Billing form module', () => {
     expect(component.importError).toContain('cliente no existe');
   });
 
-  it('imports and downloads PDF only when saving an imported invoice', () => {
+  it('imports, emits and downloads PDF only when saving an imported invoice', () => {
     spyOn(URL, 'createObjectURL').and.returnValue('blob:pdf');
     spyOn(URL, 'revokeObjectURL');
     spyOn(document, 'createElement').and.returnValue({ click: jasmine.createSpy('click') } as any);
     const file = new File(['txt'], 'factura.txt');
     component.selectedImportFile = file;
     billingService.importTxt.and.returnValue(of({
+      documento: {
+        id: 9,
+        folio: null,
+        numeroDocumento: null,
+        numeroFactura: null,
+      } as any,
+      detalles: [],
+      referencias: [],
+      guiaDespacho: null,
+    }));
+    billingService.emitDocument.and.returnValue(of({
       documento: {
         id: 9,
         folio: 123,
@@ -111,6 +127,7 @@ describe('Billing form module', () => {
     component.saveBilling();
 
     expect(billingService.importTxt).toHaveBeenCalledWith(file);
+    expect(billingService.emitDocument).toHaveBeenCalledWith(9);
     expect(billingService.downloadPdf).toHaveBeenCalledWith(9);
     expect(component.importSuccess).toContain('123');
   });

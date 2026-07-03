@@ -61,7 +61,7 @@ describe('Company module', () => {
 
     expect(component.filteredCompanies.map((item) => item.id)).toEqual([6]);
     expect(tenant.selectCompany).toHaveBeenCalledWith(company);
-    expect(router.navigate).toHaveBeenCalledWith(['/facturacion']);
+    expect(router.navigate).toHaveBeenCalledWith(['/dashboard/admin']);
   });
 
   it('saves a new company and uploads a selected logo before returning to the list', () => {

@@ -121,7 +121,7 @@ describe('AuthService', () => {
     expect(service.role()).toBe('ROLE_ADMIN');
     expect(service.companyId()).toBe(6);
     expect(service.companyName()).toBe('Empresa');
-    expect(service.landingRoute()).toBe('/usuarios');
+    expect(service.landingRoute()).toBe('/dashboard/admin');
   });
 
   it('clears invalid stored tokens', () => {
@@ -164,15 +164,15 @@ describe('AuthService', () => {
     expect(service.isAuthenticated()).toBeFalse();
   });
 
-  it('supports super admin landing routes with and without a selected tenant', () => {
+  it('sends super admins to the global dashboard as landing route', () => {
     const service = configure(jwt({ sub: 'root', rol: 'ROLE_SUPER_ADMIN', exp: futureExp }));
 
     expect(service.hasAnyRole(['ROLE_SUPER_ADMIN'])).toBeTrue();
-    expect(service.landingRoute()).toBe('/seleccionar-empresa');
+    expect(service.landingRoute()).toBe('/dashboard/super-admin');
 
     tenantContext.selectCompany({ id: 6 } as any);
 
-    expect(service.landingRoute()).toBe('/facturacion');
+    expect(service.landingRoute()).toBe('/dashboard/super-admin');
   });
 
   it('logs out and redirects by default', () => {
@@ -229,12 +229,12 @@ describe('route guards', () => {
   it('roleGuard redirects authenticated users without a required role', () => {
     auth.isAuthenticated.and.returnValue(true);
     auth.hasAnyRole.and.returnValue(false);
-    auth.landingRoute.and.returnValue('/facturacion');
+    auth.landingRoute.and.returnValue('/dashboard/admin');
 
     const route = { data: { roles: ['ROLE_SUPER_ADMIN'] } } as unknown as ActivatedRouteSnapshot;
     const result = TestBed.runInInjectionContext(() => roleGuard(route, {} as RouterStateSnapshot));
 
-    expect(router.serializeUrl(result as any)).toBe('/facturacion');
+    expect(router.serializeUrl(result as any)).toBe('/dashboard/admin');
   });
 });
 

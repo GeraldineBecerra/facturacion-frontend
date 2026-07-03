@@ -16,6 +16,8 @@ export interface BillingDocument {
   estado: string;
   estadoDocumento?: string | null;
   estadoSii: string | null;
+  usuarioEmisorId?: number | null;
+  usuarioEmisor?: string | null;
   montoNeto: number;
   montoIva: number;
   montoTotal: number;

@@ -35,6 +35,12 @@ export class SidebarComponent {
     readonly ScrollText = ScrollText;
     readonly Settings = Settings;
 
+    dashboardRoute(): string {
+        return this.auth.role() === 'ROLE_SUPER_ADMIN'
+            ? '/dashboard/super-admin'
+            : '/dashboard/admin';
+    }
+
     logout(): void {
         this.auth.logout();
     }
