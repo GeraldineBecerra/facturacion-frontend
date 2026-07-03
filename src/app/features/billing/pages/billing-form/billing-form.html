@@ -9,7 +9,13 @@
       <ui-button type="button" variant="secondary" (clicked)="saveDraft()">
         Guardar borrador
       </ui-button>
-      <ui-button type="button" (clicked)="saveBilling()">Emitir factura</ui-button>
+      <ui-button 
+        type="button" 
+        (clicked)="saveBilling()"
+        [disabled]="hasImportError || isSaving"
+        [title]="hasImportError ? 'Hay un error en la importación. Por favor, carga un archivo válido.' : ''">
+        {{ isSaving ? 'Procesando...' : 'Emitir factura' }}
+      </ui-button>
     </div>
   </div>
 
@@ -129,7 +135,51 @@
           <span class="material-symbols-outlined">cloud_upload</span>
           <span>{{ importedFileName || 'Seleccionar archivo' }}</span>
         </label>
-        <input id="billingFile" type="file" accept=".csv,.xml" (change)="onFileSelected($event)" />
+        <input id="billingFile" type="file" accept=".txt" (change)="onFileSelected($event)" [disabled]="isImporting" />
+
+        <!-- Mensaje de error -->
+        @if (importError) {
+          <div class="import-alert import-alert--error">
+            <span class="material-symbols-outlined">error</span>
+            <div>
+              <strong>Error al cargar archivo</strong>
+              <p>{{ importError }}</p>
+            </div>
+          </div>
+        }
+
+        <!-- Mensajes de advertencia -->
+        @if (importWarnings.length > 0) {
+          <div class="import-alert import-alert--warning">
+            <span class="material-symbols-outlined">warning</span>
+            <div>
+              <strong>Advertencias</strong>
+              <ul>
+                @for (warning of importWarnings; track warning) {
+                  <li>{{ warning }}</li>
+                }
+              </ul>
+            </div>
+          </div>
+        }
+
+        <!-- Mensaje de éxito -->
+        @if (importSuccess) {
+          <div class="import-alert import-alert--success">
+            <span class="material-symbols-outlined">check_circle</span>
+            <div>
+              <p>{{ importSuccess }}</p>
+            </div>
+          </div>
+        }
+
+        <!-- Estado de carga -->
+        @if (isImporting) {
+          <div class="import-alert import-alert--info">
+            <span class="material-symbols-outlined">hourglass_empty</span>
+            <p>Procesando archivo...</p>
+          </div>
+        }
 
         <ui-input name="numeroDocumento" label="Número de documento"
           placeholder="Doc #0000" [(ngModel)]="billing.numeroDocumento" />

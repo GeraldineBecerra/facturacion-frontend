@@ -1,0 +1,25 @@
+.ticker-scroll {
+  animation: ticker-scroll 28s linear infinite;
+}
+
+.ticker-scroll:hover {
+  animation-play-state: paused;
+}
+
+@keyframes ticker-scroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker-scroll {
+    animation: none;
+    width: 100%;
+    overflow-x: auto;
+  }
+}

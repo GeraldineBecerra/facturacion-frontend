@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { map, Observable } from 'rxjs';
+import { map, Observable, Subject } from 'rxjs';
 import { AppRole, AuthResponse, JwtPayload, LoginRequest } from './auth.models';
 import { TokenStorageService } from './token-storage.service';
 import { TenantContextService } from '../tenant/tenant-context.service';
@@ -10,7 +10,9 @@ import { TenantContextService } from '../tenant/tenant-context.service';
 export class AuthService {
   private readonly apiUrl = '/api/auth';
   private readonly payloadState = signal<JwtPayload | null>(null);
+  private readonly authStateSubject = new Subject<void>();
 
+  readonly authState$ = this.authStateSubject.asObservable();
   readonly payload = this.payloadState.asReadonly();
   readonly isAuthenticated = computed(() => {
     const payload = this.payloadState();
@@ -39,15 +41,20 @@ export class AuthService {
   login(request: LoginRequest, remember: boolean): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, request).pipe(
       map((response) => {
-        const payload = this.decodeToken(response.token);
+        const token = this.resolveToken(response);
+        if (!token) {
+          throw new Error('El servidor no devolvió un token de autenticación.');
+        }
+
+        const payload = this.normalizePayload(this.decodeToken(token));
         if (!this.isValidPayload(payload)) {
           throw new Error('El servidor devolvió un token inválido.');
         }
 
-        const token = response.token;
         this.tenantContext.clear();
         this.tokenStorage.setToken(token, remember);
         this.payloadState.set(payload);
+        this.authStateSubject.next();
         return response;
       }),
     );
@@ -57,6 +64,7 @@ export class AuthService {
     this.tokenStorage.clear();
     this.tenantContext.clear();
     this.payloadState.set(null);
+    this.authStateSubject.next();
     if (redirect) {
       this.router.navigate(['/login']);
     }
@@ -70,11 +78,11 @@ export class AuthService {
   landingRoute(): string {
     switch (this.role()) {
       case 'ROLE_SUPER_ADMIN':
-        return this.tenantContext.companyId ? '/facturacion' : '/seleccionar-empresa';
+        return '/dashboard/super-admin';
       case 'ROLE_ADMIN':
-        return '/usuarios';
+        return '/dashboard/admin';
       default:
-        return '/facturacion';
+        return '/dashboard/admin';
     }
   }
 
@@ -82,7 +90,7 @@ export class AuthService {
     const token = this.tokenStorage.getToken();
     if (!token) return null;
 
-    const payload = this.decodeToken(token);
+    const payload = this.normalizePayload(this.decodeToken(token));
     if (!this.isValidPayload(payload)) {
       this.tokenStorage.clear();
       return null;
@@ -90,9 +98,21 @@ export class AuthService {
     return payload;
   }
 
+  private resolveToken(response: AuthResponse): string | null {
+    return response.token
+      ?? response.accessToken
+      ?? response.jwt
+      ?? response.bearerToken
+      ?? null;
+  }
+
   private decodeToken(token: string): JwtPayload | null {
     try {
+      if (!token.includes('.')) return null;
+
       const payloadPart = token.split('.')[1];
+      if (!payloadPart) return null;
+
       const base64 = payloadPart.replace(/-/g, '+').replace(/_/g, '/');
       const normalized = base64.padEnd(Math.ceil(base64.length / 4) * 4, '=');
       const json = decodeURIComponent(
@@ -118,5 +138,22 @@ export class AuthService {
 
     const companyId = payload.empresaId ?? payload.companyId;
     return typeof companyId === 'number' && companyId > 0;
+  }
+
+  private normalizePayload(payload: JwtPayload | null): JwtPayload | null {
+    if (!payload?.rol) return payload;
+
+    const roleAliases: Record<string, AppRole> = {
+      SUPER_ADMIN: 'ROLE_SUPER_ADMIN',
+      ADMIN_ROOT: 'ROLE_SUPER_ADMIN',
+      ROOT: 'ROLE_SUPER_ADMIN',
+      ADMIN: 'ROLE_ADMIN',
+      USER: 'ROLE_USER',
+    };
+
+    return {
+      ...payload,
+      rol: roleAliases[payload.rol] ?? payload.rol,
+    };
   }
 }
