@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { finalize } from 'rxjs';
+import { finalize, switchMap } from 'rxjs';
 import { PageHeaderComponent } from '../../../../shared/components/header/page-header.component';
 import { UiButtonComponent } from '../../../../shared/ui/ui-button/ui-button.component';
 import { UiCheckboxComponent } from '../../../../shared/ui/ui-checkbox/ui-checkbox.component';
@@ -104,6 +104,7 @@ export class BillingForm {
   isGeneratingPdf = false;
   isSaving = false;
   generatedDocumentId: number | null = null;
+  hasImportError = false;
 
   constructor(
     private router: Router,
@@ -160,11 +161,22 @@ export class BillingForm {
     this.importWarnings = [];
     this.importSuccess = null;
     this.generatedDocumentId = null;
+    this.hasImportError = false;
 
     this.billingService.previewTxt(file)
       .pipe(finalize(() => this.isImporting = false))
       .subscribe({
         next: (preview) => {
+          if (!preview.clienteEncontrado || !preview.clienteId) {
+            this.importError = '⚠️ No se puede facturar: el cliente no existe en la empresa seleccionada. Por favor, verifica el RUT del cliente en el archivo o créalo en el sistema antes de continuar.';
+            this.selectedImportFile = null;
+            this.hasImportError = true;
+            this.importedFileName = '';
+            return;
+          }
+
+          // Si llegamos aquí, el cliente existe
+          this.hasImportError = false;
           this.applyPreview(preview);
           this.importWarnings = preview.advertencias ?? [];
 
@@ -172,19 +184,15 @@ export class BillingForm {
             this.loadImportedCustomer(preview.clienteId);
           }
 
-          if (!preview.clienteEncontrado || !preview.clienteId) {
-            this.importError = 'No se generó la factura porque el cliente no existe en la empresa seleccionada.';
-            this.selectedImportFile = null;
-            return;
-          }
-
-          this.importSuccess = 'Datos cargados. Presiona Guardar factura para emitir y descargar el PDF.';
+          this.importSuccess = '✓ Datos cargados correctamente. Presiona "Emitir factura" para procesar.';
         },
         error: (error) => {
           this.importError = error.error?.mensaje
             ?? error.error?.message
             ?? 'No fue posible procesar el archivo TXT.';
           this.selectedImportFile = null;
+          this.hasImportError = true;
+          this.importedFileName = '';
         },
       });
   }
@@ -204,6 +212,11 @@ export class BillingForm {
 
   saveBilling(): void {
     if (this.isSaving) return;
+
+    // Prevenir envío si hay error en la importación
+    if (this.hasImportError) {
+      return;
+    }
 
     if (!this.selectedImportFile) {
       console.log('Factura a guardar', this.buildPayload());
@@ -300,9 +313,11 @@ export class BillingForm {
     this.isSaving = true;
     this.isGeneratingPdf = true;
     this.importError = null;
-    this.importSuccess = 'Guardando factura y generando PDF...';
+    this.importSuccess = 'Guardando y emitiendo factura...';
 
-    this.billingService.importTxt(file).subscribe({
+    this.billingService.importTxt(file)
+      .pipe(switchMap((result) => this.billingService.emitDocument(result.documento.id)))
+      .subscribe({
       next: (result) => {
         this.generatedDocumentId = result.documento.id;
         this.downloadPdf(result.documento.id, this.getInvoiceNumber(result.documento));

@@ -20,7 +20,7 @@ export interface TableColumn {
 export interface TableAction {
   type: 'edit' | 'delete' | 'custom';
   label?: string;
-  icon?: 'edit' | 'delete' | 'view';
+  icon?: 'edit' | 'delete' | 'view' | 'download' | 'file-text' | 'picture-as-pdf';
   routerLinkFn?: (row: any) => string[];
   clickFn?: (row: any) => void;
   colorClass?: string;
@@ -170,5 +170,15 @@ export class DynamicTableComponent<T = any> {
   isActionVisible(action: TableAction, row: any): boolean {
     if (!action.visibleFn) return true;
     return action.visibleFn(row);
+  }
+
+  getActionIcon(action: TableAction): string {
+    const icons: Record<string, string> = {
+      view: 'visibility',
+      download: 'download',
+      'file-text': 'description',
+      'picture-as-pdf': 'picture_as_pdf',
+    };
+    return icons[action.icon || 'view'] || 'visibility';
   }
 }

@@ -11,12 +11,13 @@ import { CustomersForm } from './features/customers/pages/customers-form/custome
 import { CustomersList } from './features/customers/pages/customers-list/customers-list';
 import { ProductList } from './features/product/pages/product-list/product-list';
 import { ProductForm } from './features/product/pages/product-form/product-form';
-import { FolioAdmin } from './features/folio/pages/folio-admin/folio-admin';
 import { RoleList } from './features/role/pages/role-list/role-list';
 import { DocumentTypeList } from './features/document-type/pages/document-type-list/document-type-list';
 import { AuditList } from './features/audit/pages/audit-list/audit-list';
 import { Profile } from './features/profile/pages/profile/profile';
 import { Login } from './features/login/login';
+import { DashboardAdmin } from './features/dashboard/dashboard-admin';
+import { DashboardSuperAdmin } from './features/dashboard/dashboard-super-admin';
 import { authGuard } from './core/guards/auth.guard';
 import { roleGuard } from './core/guards/role.guard';
 
@@ -39,7 +40,19 @@ export const routes: Routes = [
             {
                 path: '',
                 pathMatch: 'full',
-                redirectTo: 'facturacion'
+                redirectTo: 'dashboard/admin'
+            },
+            {
+                path: 'dashboard/admin',
+                component: DashboardAdmin,
+                canActivate: [roleGuard],
+                data: { roles: ['ROLE_SUPER_ADMIN', 'ROLE_ADMIN', 'ROLE_USER'] }
+            },
+            {
+                path: 'dashboard/super-admin',
+                component: DashboardSuperAdmin,
+                canActivate: [roleGuard],
+                data: { roles: ['ROLE_SUPER_ADMIN'] }
             },
             {
                 path: 'usuarios',
@@ -121,7 +134,8 @@ export const routes: Routes = [
             },
             {
                 path: 'folios',
-                component: FolioAdmin,
+                loadComponent: () => import('./features/folio/pages/folio-admin/folio-admin')
+                    .then((m) => m.FolioAdmin),
                 canActivate: [roleGuard],
                 data: { roles: ['ROLE_SUPER_ADMIN'] }
             },

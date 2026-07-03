@@ -1,30 +1,230 @@
 <div class="folio-page">
   <app-page-header
-    headerTitle="Administración de Folios"
-    subtitle="Consulta tipos de documento, carga archivos CAF y revisa su consumo."
+    headerTitle="Gestión de Folios"
+    subtitle="Administra el inventario de documentos electrónicos y controla los rangos autorizados por el SII."
   />
 
+  <header class="folio-hero">
+    <!-- <div>
+      <span class="eyebrow">Folios y CAF</span>
+      <h1>Inventario de timbraje</h1>
+      <p>Revisa disponibilidad, estados críticos y carga nuevos rangos CAF para emitir documentos tributarios.</p>
+    </div> -->
+
+    <div class="hero-actions">
+      <!-- <button type="button" class="btn btn-secondary" (click)="openManualModal()">
+        <span class="material-symbols-outlined">add_task</span>
+        Ingreso manual
+      </button> -->
+      <!-- <button type="button" class="btn btn-primary" (click)="openCafModal()">
+        <span class="material-symbols-outlined">upload_file</span>
+        Cargar nuevo CAF
+      </button> -->
+    </div>
+  </header>
+
   @if (error) {
-    <div class="message error">{{ error }}</div>
-  }
-  @if (success) {
-    <div class="message success">{{ success }}</div>
+    <div class="message error">
+      <span class="material-symbols-outlined">error</span>
+      {{ error }}
+    </div>
   }
 
-  <section class="card">
-    <div class="section-heading">
-      <div>
-        <h2>Cargar CAF</h2>
-        <p>Registra un nuevo rango de folios autorizado por el SII.</p>
+  @if (success) {
+    <div class="message success">
+      <span class="material-symbols-outlined">check_circle</span>
+      {{ success }}
+    </div>
+  }
+
+  <section class="metrics-grid" aria-label="Resumen de folios principales">
+    @for (card of metricCards; track trackMetric($index, card)) {
+      <article class="metric-card" [class.warning]="card.status === 'warning'" [class.critical]="card.status === 'critical'">
+        <div class="metric-top">
+          <div class="metric-icon">
+            <span class="material-symbols-outlined">{{ card.icon }}</span>
+          </div>
+          <span class="dte-code">DTE {{ card.code }}</span>
+        </div>
+
+        <div>
+          <h2>{{ card.title }}</h2>
+          <div class="metric-value">
+            <strong>{{ card.available }}</strong>
+            <span>{{ card.label }}</span>
+          </div>
+        </div>
+
+        <button type="button" class="metric-action" (click)="openManualModal(card.code)">
+          Actualizar folio
+          <span class="material-symbols-outlined">chevron_right</span>
+        </button>
+      </article>
+    }
+  </section>
+
+  <section class="folio-layout">
+    <article class="inventory-panel">
+      <div class="panel-heading">
+        <div>
+          <h2>
+            <span class="material-symbols-outlined">analytics</span>
+            Inventario de documentos
+          </h2>
+          <p>Tipos secundarios y estado de sus rangos activos.</p>
+        </div>
+        <button type="button" class="icon-button" (click)="loadData()" title="Actualizar inventario" aria-label="Actualizar inventario">
+          <span class="material-symbols-outlined">refresh</span>
+        </button>
       </div>
+
+      @if (isLoading) {
+        <div class="loading-state">
+          <span></span>
+          Cargando folios...
+        </div>
+      } @else if (visibleSecondaryControls.length === 0) {
+        <div class="empty-state">No hay tipos secundarios configurados.</div>
+      } @else {
+        <div class="inventory-list">
+          @for (control of visibleSecondaryControls; track trackControl($index, control)) {
+            <div class="inventory-row">
+              <div class="row-title">
+                <div class="row-icon">
+                  <span class="material-symbols-outlined">{{ iconByCode[control.codigoTipoDocumento] || 'article' }}</span>
+                </div>
+                <div>
+                  <h3>{{ control.tipoDocumento }}</h3>
+                  <p>DTE Tipo {{ control.codigoTipoDocumento }}</p>
+                </div>
+              </div>
+
+              <div class="row-meta">
+                <div>
+                  <span>Último utilizado</span>
+                  <strong>{{ control.ultimoFolioUtilizado ?? '-' }}</strong>
+                </div>
+                <div>
+                  <span>Rango</span>
+                  <strong>{{ control.rangoDesde ?? '-' }} - {{ control.rangoHasta ?? '-' }}</strong>
+                </div>
+                <span class="status-pill" [class]="getStatusClass(control.estadoCaf)">
+                  {{ getStatusLabel(control.estadoCaf) }}
+                </span>
+                <button type="button" class="icon-button" (click)="openManualModal(control.codigoTipoDocumento)" title="Actualizar folio" aria-label="Actualizar folio">
+                  <span class="material-symbols-outlined">settings_suggest</span>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </article>
+
+    <aside class="security-panel">
+      <div class="security-mark">
+        <span class="material-symbols-outlined">verified_user</span>
+      </div>
+      <h2>Seguridad de timbraje</h2>
+      <p>Los rangos CAF se controlan por empresa y se consumen al emitir cada DTE.</p>
+
+      <div class="security-stats">
+        <div>
+          <span>Disponibles</span>
+          <strong>{{ totalAvailable }}</strong>
+        </div>
+        <div>
+          <span>CAF activos</span>
+          <strong>{{ activeCafs }}</strong>
+        </div>
+        <div>
+          <span>Críticos</span>
+          <strong>{{ criticalTypes }}</strong>
+        </div>
+      </div>
+
+      <div class="secure-chip">
+        <span></span>
+        Conexión segura activa
+      </div>
+    </aside>
+  </section>
+
+  <section class="caf-history">
+    <div class="panel-heading">
+      <div>
+        <h2>
+          <span class="material-symbols-outlined">inventory_2</span>
+          CAF registrados
+        </h2>
+        <p>Rangos autorizados y disponibilidad actual.</p>
+      </div>
+      <span class="record-count">{{ cafs.length }} registros</span>
     </div>
 
-    <form #cafForm="ngForm" (ngSubmit)="uploadCaf(cafForm)">
-      <div class="form-grid">
+    <div class="caf-table-wrapper">
+      <table class="caf-table">
+        <thead>
+          <tr>
+            <th>Tipo</th>
+            <th>Rango</th>
+            <th>Disponibles</th>
+            <th>Generados</th>
+            <th>Vencimiento</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (!isLoading && cafs.length === 0) {
+            <tr>
+              <td colspan="6" class="empty-cell">No hay CAF registrados.</td>
+            </tr>
+          }
+
+          @for (item of cafs; track trackCaf($index, item)) {
+            <tr>
+              <td>
+                <div class="table-title">
+                  <strong>{{ item.tipoDocumento }}</strong>
+                  <span>DTE {{ item.codigoTipoDocumento }}</span>
+                </div>
+              </td>
+              <td>{{ item.rangoDesde }} - {{ item.rangoHasta }}</td>
+              <td>{{ item.foliosDisponibles }}</td>
+              <td>{{ item.foliosGenerados }}</td>
+              <td>{{ item.fechaVencimiento ? (item.fechaVencimiento | date:'dd/MM/yyyy') : 'Sin vencimiento' }}</td>
+              <td>
+                <span class="status-pill" [class]="getStatusClass(item.estado)">
+                  {{ item.estado }}
+                </span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+@if (showCafModal || showManualModal) {
+  <div class="modal-shell" role="dialog" aria-modal="true">
+    <button type="button" class="modal-backdrop" (click)="showCafModal ? closeCafModal() : closeManualModal()" aria-label="Cerrar"></button>
+
+    <section class="modal-card">
+      <div class="modal-heading">
+        <div>
+          <h2>{{ showManualModal ? 'Ingreso Manual de Folios' : 'Cargar nuevo CAF' }}</h2>
+          <p>{{ showManualModal ? 'Registra el rango autorizado por el SII.' : 'Pega el XML CAF entregado por el SII para habilitar nuevos folios.' }}</p>
+        </div>
+        <button type="button" class="icon-button" (click)="showCafModal ? closeCafModal() : closeManualModal()" aria-label="Cerrar modal">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <form #cafForm="ngForm" (ngSubmit)="uploadCaf(cafForm)" class="caf-form">
         <div class="select-field">
           <label for="codigoTipoDocumento">Tipo de documento <span>*</span></label>
-          <select id="codigoTipoDocumento" name="codigoTipoDocumento"
-            [(ngModel)]="caf.codigoTipoDocumento" required>
+          <select id="codigoTipoDocumento" name="codigoTipoDocumento" [(ngModel)]="caf.codigoTipoDocumento" required>
             <option [ngValue]="null">Selecciona un tipo</option>
             @for (type of documentTypes; track type.id) {
               <option [ngValue]="type.codigoSii">{{ type.codigoSii }} · {{ type.descripcion }}</option>
@@ -32,49 +232,37 @@
           </select>
         </div>
 
-        <ui-input id="rangoDesde" name="rangoDesde" type="number" label="Rango desde"
-          [(ngModel)]="caf.rangoDesde" [required]="true" />
-        <ui-input id="rangoHasta" name="rangoHasta" type="number" label="Rango hasta"
-          [(ngModel)]="caf.rangoHasta" [required]="true" />
-        <ui-input id="fechaAutorizacion" name="fechaAutorizacion" type="date"
-          label="Fecha de autorización" [(ngModel)]="caf.fechaAutorizacion" [required]="true" />
-        <ui-input id="fechaVencimiento" name="fechaVencimiento" type="date"
-          label="Fecha de vencimiento" [(ngModel)]="caf.fechaVencimiento" />
+        <div class="form-grid">
+          <ui-input id="rangoDesde" name="rangoDesde" type="number" label="Folio inicial"
+            [(ngModel)]="caf.rangoDesde" [required]="true" />
+          <ui-input id="rangoHasta" name="rangoHasta" type="number" label="Folio final"
+            [(ngModel)]="caf.rangoHasta" [required]="true" />
+          <ui-input id="fechaAutorizacion" name="fechaAutorizacion" type="date" label="Fecha de autorización"
+            [(ngModel)]="caf.fechaAutorizacion" [required]="true" />
+          <!-- <ui-input id="fechaVencimiento" name="fechaVencimiento" type="date" label="Fecha de vencimiento"
+            [(ngModel)]="caf.fechaVencimiento" /> -->
+        </div>
 
-        <div class="xml-field">
+        <!-- <div class="xml-field">
           <label for="cafXml">XML del CAF <span>*</span></label>
           <textarea id="cafXml" name="cafXml" rows="7" [(ngModel)]="caf.cafXml" required
             placeholder="Pega aquí el contenido XML entregado por el SII"></textarea>
+        </div> -->
+
+        <!-- <div class="notice">
+          <span class="material-symbols-outlined">info</span>
+          <p>El rango ingresado debe coincidir con la autorización del SII para evitar rechazos al emitir DTE.</p>
+        </div> -->
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" (click)="showCafModal ? closeCafModal() : closeManualModal()">
+            Cancelar
+          </button>
+          <ui-button type="submit" size="lg" [loading]="isSaving">
+            {{ showManualModal ? 'Validar e ingresar' : 'Cargar CAF' }}
+          </ui-button>
         </div>
-      </div>
-
-      <div class="form-actions">
-        <ui-button type="submit" size="lg" [loading]="isSaving">Cargar CAF</ui-button>
-      </div>
-    </form>
-  </section>
-
-  <section class="card">
-    <div class="section-heading">
-      <div>
-        <h2>CAF registrados</h2>
-        <p>Rangos autorizados y folios todavía disponibles.</p>
-      </div>
-      <span>{{ cafs.length }} registros</span>
-    </div>
-    <app-table [columns]="cafColumns" [data]="cafs" [isLoading]="isLoading"
-      [error]="error" (retry)="loadData()" />
-  </section>
-
-  <section class="card">
-    <div class="section-heading">
-      <div>
-        <h2>Control de folios</h2>
-        <p>Seguimiento del último folio utilizado por documento.</p>
-      </div>
-    </div>
-    <app-table [columns]="controlColumns" [data]="controls" [isLoading]="isLoading"
-      [error]="error" (retry)="loadData()" />
-  </section>
-
-</div>
+      </form>
+    </section>
+  </div>
+}

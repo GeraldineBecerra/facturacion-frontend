@@ -1,4 +1,63 @@
 <nav class="sticky top-0 z-50 border-b border-slate-200/70 bg-white/90 backdrop-blur">
+  <div class="relative z-[60] h-10 w-full overflow-hidden bg-blue-950 text-white">
+    <div class="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-blue-950 to-transparent"></div>
+    <div class="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-blue-950 to-transparent"></div>
+
+    <div class="ticker-scroll flex h-full w-max items-center whitespace-nowrap px-8 text-[10px] font-bold uppercase tracking-[0.2em]">
+      <div class="flex items-center gap-12 pr-12">
+        <div class="flex items-center gap-2 text-blue-200">
+          <span>Indicadores Chile</span>
+          <span class="h-1 w-1 rounded-full bg-blue-300"></span>
+        </div>
+
+        @if (indicatorError) {
+          <div class="flex items-center gap-2 text-red-200">
+            <span>{{ indicatorError }}</span>
+          </div>
+        } @else if (indicatorSlowLoading) {
+          <div class="flex items-center flex-wrap items-center gap-3 text-amber-200">
+            <span>La carga de indicadores está tardando.</span>
+            <button
+              type="button"
+              class="rounded-full border border-amber-200 bg-white/10 px-3 py-1 text-[10px] uppercase tracking-[0.18em] hover:bg-amber-100 hover:text-amber-900"
+              (click)="retryLoadingIndicators()"
+            >
+              Reintentar
+            </button>
+            <button
+              type="button"
+              class="rounded-full border border-amber-200 px-3 py-1 text-[10px] uppercase tracking-[0.18em] hover:bg-amber-100 hover:text-amber-900"
+              (click)="keepWaitingForIndicators()"
+            >
+              Seguir esperando
+            </button>
+          </div>
+        } @else if (isLoadingIndicators) {
+          <div class="flex items-center gap-2 text-blue-200">
+            <span>Cargando valores...</span>
+          </div>
+        } @else {
+          @for (group of [0, 1]; track group) {
+            <div class="flex items-center gap-12 pr-12">
+              @for (indicator of indicators; track $index) {
+                <div class="flex items-center gap-2">
+                  <span class="text-blue-200">{{ indicator.label }}:</span>
+                  <span>{{ formatIndicatorValue(indicator.value) }}</span>
+                  <span
+                    class="material-symbols-outlined text-xs"
+                    [ngClass]="indicatorTrendClass(indicator.code)"
+                  >
+                    {{ indicatorTrendIcon(indicator.code) }}
+                  </span>
+                </div>
+              }
+            </div>
+          }
+        }
+      </div>
+    </div>
+  </div>
+
   <div class="h-16 px-4 md:px-6 flex items-center justify-between gap-4">
     <div class="flex items-center gap-3">
       <button (click)="toggleSidebar.emit()"

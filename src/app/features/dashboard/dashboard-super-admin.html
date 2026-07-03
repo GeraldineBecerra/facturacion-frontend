@@ -1,0 +1,130 @@
+<section class="dashboard-shell">
+  <header class="dashboard-header">
+    <div>
+      <p class="eyebrow">Vista global</p>
+      <h1>Dashboard super admin</h1>
+      <p class="subtitle">Control general de empresas, usuarios, documentos y alertas del sistema.</p>
+    </div>
+
+    <div class="header-actions">
+      <a routerLink="/empresas/nueva" class="primary-action">
+        <span class="material-symbols-outlined">add_business</span>
+        Nueva empresa
+      </a>
+      <a routerLink="/usuarios/nuevo" class="secondary-action">
+        <span class="material-symbols-outlined">person_add</span>
+        Nuevo usuario
+      </a>
+    </div>
+  </header>
+
+  @if (isLoading) {
+    <div class="dashboard-state">Cargando indicadores globales...</div>
+  }
+
+  @if (errorMessage) {
+    <div class="dashboard-state dashboard-state--error">{{ errorMessage }}</div>
+  }
+
+  <div class="metric-grid">
+    @for (metric of metrics; track metric.label) {
+      <article class="metric-card" [class.metric-card--alert]="metric.tone === 'alert'">
+        <div class="metric-icon">
+          <span class="material-symbols-outlined">{{ metric.icon }}</span>
+        </div>
+        <div>
+          <p>{{ metric.label }}</p>
+          <strong>{{ metric.value }}</strong>
+          <span>{{ metric.detail }}</span>
+        </div>
+      </article>
+    }
+  </div>
+
+  <div class="dashboard-grid">
+    <section class="panel panel--wide">
+      <div class="panel-header">
+        <div>
+          <h2>Empresas con mayor actividad</h2>
+          <p>Ranking mensual por documentos emitidos.</p>
+        </div>
+        <a routerLink="/empresas">Ver empresas</a>
+      </div>
+
+      <div class="company-ranking">
+        @for (company of topCompanies; track company.name) {
+          <article>
+            <div class="ranking-copy">
+              <strong>{{ company.name }}</strong>
+              <span>{{ company.documents }} documentos · {{ company.total }}</span>
+            </div>
+            <div class="progress-track">
+              <span [style.width.%]="company.percent"></span>
+            </div>
+          </article>
+        } @empty {
+          <p class="empty-text">No hay actividad de empresas para mostrar.</p>
+        }
+      </div>
+    </section>
+
+    <aside class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>Alertas globales</h2>
+          <p>Eventos que requieren seguimiento.</p>
+        </div>
+      </div>
+
+      <div class="alert-list">
+        @for (alert of alerts; track alert.title) {
+          <article class="alert-item" [class.alert-item--danger]="alert.tone === 'danger'">
+            <span class="material-symbols-outlined">{{ alert.icon }}</span>
+            <div>
+              <strong>{{ alert.title }}</strong>
+              <p>{{ alert.description }}</p>
+            </div>
+          </article>
+        }
+      </div>
+    </aside>
+
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>Usuarios por rol</h2>
+          <p>Distribución de accesos.</p>
+        </div>
+      </div>
+
+      <div class="role-list">
+        @for (role of roles; track role.name) {
+          <div>
+            <span>{{ role.name }}</span>
+            <strong>{{ role.count }}</strong>
+          </div>
+        } @empty {
+          <p class="empty-text">No hay usuarios con rol asignado.</p>
+        }
+      </div>
+    </section>
+
+    <!-- <section class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>Accesos rápidos</h2>
+          <p>Administración global.</p>
+        </div>
+      </div>
+
+      <div class="quick-actions">
+        @for (action of quickActions; track action.label) {
+          <a [routerLink]="action.route">
+            <span class="material-symbols-outlined">{{ action.icon }}</span>
+            {{ action.label }}
+          </a>
+        }
+      </div>
+    </section> -->
+  </div>
+</section>

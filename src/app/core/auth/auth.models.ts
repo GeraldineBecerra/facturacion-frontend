@@ -6,7 +6,10 @@ export interface LoginRequest {
 }
 
 export interface AuthResponse {
-  token: string;
+  token?: string;
+  accessToken?: string;
+  jwt?: string;
+  bearerToken?: string;
 }
 
 export interface JwtPayload {

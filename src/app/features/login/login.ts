@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { finalize, timeout } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
 import { UiButtonComponent } from '../../shared/ui/ui-button/ui-button.component';
@@ -23,7 +23,6 @@ export class Login implements OnInit {
 
   constructor(
     private auth: AuthService,
-    private route: ActivatedRoute,
     private router: Router,
   ) {}
 
@@ -54,13 +53,7 @@ export class Login implements OnInit {
       )
       .subscribe({
         next: () => {
-          const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
-          const destination = this.auth.role() === 'ROLE_SUPER_ADMIN'
-            ? '/seleccionar-empresa'
-            : returnUrl && returnUrl !== '/login'
-            ? returnUrl
-            : this.auth.landingRoute();
-          this.router.navigateByUrl(destination);
+          this.router.navigateByUrl(this.auth.landingRoute());
         },
         error: (error: any) => {
           if (error.name === 'TimeoutError') {

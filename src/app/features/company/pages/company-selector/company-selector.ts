@@ -60,7 +60,7 @@ export class CompanySelector implements OnInit {
 
   select(company: CompanyResponse): void {
     this.tenantContext.selectCompany(company);
-    this.router.navigate(['/facturacion']);
+    this.router.navigate(['/dashboard/admin']);
   }
 
   logout(): void {

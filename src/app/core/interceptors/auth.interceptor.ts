@@ -33,7 +33,8 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
       if (
         error.status === 401 &&
         !request.url.includes('/auth/login') &&
-        !isLogoRequest(request.url)
+        !isLogoRequest(request.url) &&
+        !isDocumentDownloadRequest(request.url)
       ) {
         auth.logout(false);
         if (!handlingUnauthorized) {
@@ -48,4 +49,8 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
 
 function isLogoRequest(url: string): boolean {
   return /\/empresas\/\d+\/logo(?:$|\?)/.test(url);
+}
+
+function isDocumentDownloadRequest(url: string): boolean {
+  return /\/documentos\/\d+\/(?:pdf|txt|xml|factura)(?:$|\?)/.test(url);
 }
