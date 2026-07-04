@@ -44,6 +44,19 @@
       </div>
     </div>
 
+    @if (siiMessage) {
+      <div
+        class="mb-4 flex items-center justify-between gap-4 rounded-lg border px-4 py-3 text-sm"
+        [ngClass]="siiMessageType === 'error'
+          ? 'border-red-200 bg-red-50 text-red-700'
+          : 'border-emerald-200 bg-emerald-50 text-emerald-700'"
+      >
+        <span>{{ siiMessage }}</span>
+        <button type="button" class="opacity-70 hover:opacity-100" aria-label="Cerrar"
+          (click)="siiMessage = null">✕</button>
+      </div>
+    }
+
     <app-table
       [columns]="columns"
       [data]="filteredDocuments"
@@ -96,7 +109,7 @@
       </div>
     </article>
 
-    <!-- <article class="sii-card">
+    <article class="sii-card">
       <div>
         <div class="sii-title">
           <span class="material-symbols-outlined">cloud_done</span>
@@ -104,21 +117,21 @@
         </div>
 
         <div class="sii-status">
-          <span>Conectividad de API</span>
-          <strong>Activa</strong>
+          <span>Aceptados por el SII</span>
+          <strong>{{ siiAceptados }} / {{ documents.length }}</strong>
         </div>
 
         <div class="progress-track">
-          <div class="progress-value"></div>
+          <div class="progress-value" [style.width.%]="siiAceptadosPct"></div>
         </div>
 
-        <p>La sincronización automática de documentos funciona sin errores.</p>
+        <p>{{ siiEnProceso }} en proceso · {{ siiRechazados }} rechazados.</p>
       </div>
 
       <div class="last-sync">
-        <span>Última sincronización exitosa</span>
-        <strong>Hoy, 14:22</strong>
+        <span>Documentos gestionados con el SII</span>
+        <strong>{{ siiGestionados }}</strong>
       </div>
-    </article> -->
+    </article>
   </section>
 </div>
