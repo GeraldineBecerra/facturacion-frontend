@@ -55,16 +55,16 @@
 
         <ui-input className="md:col-span-3" name="address" label="Dirección"
           placeholder="Avenida Siempre Viva 123" [(ngModel)]="customer.address" />
-        <ui-input name="district" label="Comuna" [(ngModel)]="customer.district" />
-        <ui-input name="city" label="Ciudad" [(ngModel)]="customer.city" />
+        <ui-input name="district" label="Comuna" placeholder="Ej. Providencia" [(ngModel)]="customer.district" />
+        <ui-input name="city" label="Ciudad" placeholder="Ej. Santiago" [(ngModel)]="customer.city" />
         <ui-input name="email" type="email" label="Correo electrónico"
           placeholder="contacto@empresa.cl" [(ngModel)]="customer.email" />
         <ui-input className="md:col-span-3" name="businessActivity" label="Giro"
           placeholder="Venta de servicios de transporte y logística"
           [(ngModel)]="customer.businessActivity" />
-        <ui-input name="internalNote" label="Glosa interna"
+        <ui-input name="internalNote" label="Glosa interna" placeholder="Descripción para uso interno"
           [(ngModel)]="customer.internalNote" />
-        <ui-input name="internalCode" label="Código interno"
+        <ui-input name="internalCode" label="Código interno" placeholder="Ej. CLI-001"
           [(ngModel)]="customer.internalCode" />
       </div>
     </section>
@@ -73,11 +73,11 @@
       @for (contact of contactSections; track contact.key) {
         <article class="form-card contact-card">
           <h3>{{ contact.title }}</h3>
-          <ui-input [name]="contact.key + 'Phone'" type="tel" label="Teléfono"
+          <ui-input [name]="contact.key + 'Phone'" type="tel" label="Teléfono" placeholder="+56 9 1234 5678"
             [(ngModel)]="customer.contacts[contact.key].phone" />
-          <ui-input [name]="contact.key + 'Email'" type="email" label="Email"
+          <ui-input [name]="contact.key + 'Email'" type="email" label="Email" placeholder="contacto@empresa.cl"
             [(ngModel)]="customer.contacts[contact.key].email" />
-          <ui-input [name]="contact.key + 'Position'" label="Cargo"
+          <ui-input [name]="contact.key + 'Position'" label="Cargo" placeholder="Ej. Encargado de compras"
             [(ngModel)]="customer.contacts[contact.key].position" />
         </article>
       }
@@ -88,9 +88,9 @@
       <div class="form-grid">
         <ui-input name="collectionMain" type="email" label="Email principal"
           placeholder="cobranzas@empresa.cl" [(ngModel)]="customer.collections.main" />
-        <ui-input name="collectionOptionalOne" type="email" label="Email opcional 01"
+        <ui-input name="collectionOptionalOne" type="email" label="Email opcional 01" placeholder="cobranzas2@empresa.cl"
           [(ngModel)]="customer.collections.optionalOne" />
-        <ui-input name="collectionOptionalTwo" type="email" label="Email opcional 02"
+        <ui-input name="collectionOptionalTwo" type="email" label="Email opcional 02" placeholder="cobranzas3@empresa.cl"
           [(ngModel)]="customer.collections.optionalTwo" />
       </div>
     </section>

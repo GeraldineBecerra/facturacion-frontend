@@ -31,8 +31,8 @@
             [(ngModel)]="billing.razonSocial" [required]="true" />
           <ui-input className="md:col-span-2" name="direccion" label="Dirección"
             placeholder="Calle, número y oficina" [(ngModel)]="billing.direccion" />
-          <ui-input name="ciudad" label="Ciudad" [(ngModel)]="billing.ciudad" />
-          <ui-input name="comuna" label="Comuna" [(ngModel)]="billing.comuna" />
+          <ui-input name="ciudad" label="Ciudad" placeholder="Ej. Santiago" [(ngModel)]="billing.ciudad" />
+          <ui-input name="comuna" label="Comuna" placeholder="Ej. Providencia" [(ngModel)]="billing.comuna" />
 
           <div class="field">
             <label for="pais">País</label>
@@ -47,9 +47,9 @@
             [(ngModel)]="billing.giro" />
           <ui-input name="email" type="email" label="Correo electrónico"
             placeholder="facturacion@empresa.cl" [(ngModel)]="billing.email" />
-          <ui-input name="glosaInterna" label="Glosa interna"
+          <ui-input name="glosaInterna" label="Glosa interna" placeholder="Descripción para uso interno"
             [(ngModel)]="billing.glosaInterna" />
-          <ui-input name="codigoInterno" label="Código interno"
+          <ui-input name="codigoInterno" label="Código interno" placeholder="Ej. CLI-001"
             [(ngModel)]="billing.codigoInterno" />
         </div>
       </section>
@@ -80,13 +80,13 @@
           </div>
 
           <div class="compact-grid">
-            <ui-input name="porcentajeIva" type="number" label="% IVA"
+            <ui-input name="porcentajeIva" type="number" label="% IVA" placeholder="Ej. 19"
               [(ngModel)]="billing.porcentajeIva" />
-            <ui-input name="tipoCambio" type="number" label="Tipo de cambio"
+            <ui-input name="tipoCambio" type="number" label="Tipo de cambio" placeholder="Ej. 950"
               [(ngModel)]="billing.tipoCambio" />
           </div>
 
-          <ui-input name="motivo" label="Motivo" [(ngModel)]="billing.motivo" />
+          <ui-input name="motivo" label="Motivo" placeholder="Motivo del documento" [(ngModel)]="billing.motivo" />
 
           <div class="field">
             <label>Moneda</label>
@@ -102,9 +102,9 @@
           </div>
 
           <div class="compact-grid">
-            <ui-input name="fechaEmision" type="date" label="Emisión"
+            <ui-input name="fechaEmision" type="date" label="Emisión" placeholder="Fecha de emisión"
               [(ngModel)]="billing.fechaEmision" [required]="true" />
-            <ui-input name="fechaVencimiento" type="date" label="Vencimiento"
+            <ui-input name="fechaVencimiento" type="date" label="Vencimiento" placeholder="Fecha de vencimiento"
               [(ngModel)]="billing.fechaVencimiento" />
           </div>
 

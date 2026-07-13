@@ -1,20 +1,27 @@
 import { Injectable, signal } from '@angular/core';
+import { Subject } from 'rxjs';
 import { CompanyResponse } from '../../features/company/models/company.model';
 
 @Injectable({ providedIn: 'root' })
 export class TenantContextService {
   private readonly storageKey = 'selected_company';
   private readonly selectedCompanyState = signal<CompanyResponse | null>(this.readCompany());
+  private readonly companyChangedSubject = new Subject<CompanyResponse>();
 
   readonly selectedCompany = this.selectedCompanyState.asReadonly();
+  readonly companyChanged$ = this.companyChangedSubject.asObservable();
 
   get companyId(): number | null {
     return this.selectedCompanyState()?.id ?? null;
   }
 
   selectCompany(company: CompanyResponse): void {
+    const previousCompanyId = this.companyId;
     sessionStorage.setItem(this.storageKey, JSON.stringify(company));
     this.selectedCompanyState.set(company);
+    if (previousCompanyId !== company.id) {
+      this.companyChangedSubject.next(company);
+    }
   }
 
   clear(): void {
