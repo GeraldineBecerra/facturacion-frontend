@@ -60,3 +60,31 @@ export interface BillingDocumentDetail {
   referencias: unknown[];
   guiaDespacho: unknown | null;
 }
+
+/** Registro de un intento de envío al SII (EnvioSiiResponse del backend). */
+export interface SiiEnvio {
+  id: number;
+  trackId: string | null;
+  fechaEnvio: string | null;
+  estado: string | null;
+  respuesta: string | null;
+  intentos: number | null;
+}
+
+/** Transición de estado SII de un documento (HistorialSiiResponse del backend). */
+export interface SiiHistorial {
+  estado: string | null;
+  fechaEstado: string | null;
+  mensaje: string | null;
+}
+
+/** Estado SII completo de un documento (EstadoSiiResponse del backend). */
+export interface SiiEstado {
+  documentoId: number;
+  folio: number | null;
+  estadoSii: string | null;
+  xmlFirmado: boolean | null;
+  trackId: string | null;
+  envio: SiiEnvio | null;
+  historial: SiiHistorial[];
+}

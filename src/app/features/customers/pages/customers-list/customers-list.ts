@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, Optional } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { finalize } from 'rxjs';
+import { finalize, Subject, Subscription, takeUntil } from 'rxjs';
+import { TenantContextService } from '../../../../core/tenant/tenant-context.service';
 import { PageHeaderComponent } from '../../../../shared/components/header/page-header.component';
 import { DynamicTableComponent, TableAction, TableColumn } from '../../../../shared/components/table/table';
 import { UiButtonComponent } from '../../../../shared/ui/ui-button/ui-button.component';
@@ -16,7 +17,10 @@ import { CustomerService } from '../../services/customer.service';
   templateUrl: './customers-list.html',
   styleUrl: './customers-list.scss',
 })
-export class CustomersList implements OnInit {
+export class CustomersList implements OnInit, OnDestroy {
+  private readonly destroy$ = new Subject<void>();
+  private customersRequest?: Subscription;
+
   filters = { search: '', status: '' };
   customers: CustomerResponse[] = [];
   filteredCustomers: CustomerResponse[] = [];
@@ -44,20 +48,58 @@ export class CustomersList implements OnInit {
     },
   ];
 
-  constructor(private router: Router, private customerService: CustomerService) {}
+  constructor(
+    private router: Router,
+    private customerService: CustomerService,
+    @Optional() private tenantContext?: TenantContextService,
+  ) {}
 
   ngOnInit(): void {
+    this.tenantContext?.companyChanged$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this.loadCustomers());
     this.loadCustomers();
+  }
+
+  ngOnDestroy(): void {
+    this.customersRequest?.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   get activeCustomers(): number {
     return this.customers.filter((customer) => customer.activo).length;
   }
 
+  get newCustomersThisMonth(): number {
+    const now = new Date();
+
+    return this.customers.filter((customer) => {
+      const createdAt = new Date(customer.createdAt);
+      return !Number.isNaN(createdAt.getTime()) &&
+        createdAt.getFullYear() === now.getFullYear() &&
+        createdAt.getMonth() === now.getMonth();
+    }).length;
+  }
+
+  get recentCustomerActivity(): number {
+    const now = Date.now();
+    const last24Hours = now - 24 * 60 * 60 * 1000;
+
+    return this.customers.filter((customer) => {
+      const activityAt = new Date(customer.updatedAt || customer.createdAt).getTime();
+      return !Number.isNaN(activityAt) && activityAt >= last24Hours && activityAt <= now;
+    }).length;
+  }
+
   loadCustomers(): void {
+    this.customersRequest?.unsubscribe();
     this.isLoading = true;
     this.error = null;
-    this.customerService.findAll().pipe(finalize(() => this.isLoading = false)).subscribe({
+    this.customersRequest = this.customerService.findAll().pipe(
+      takeUntil(this.destroy$),
+      finalize(() => this.isLoading = false),
+    ).subscribe({
       next: (customers) => {
         this.customers = customers;
         this.search();

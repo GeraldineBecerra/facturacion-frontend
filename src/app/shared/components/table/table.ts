@@ -20,7 +20,7 @@ export interface TableColumn {
 export interface TableAction {
   type: 'edit' | 'delete' | 'custom';
   label?: string;
-  icon?: 'edit' | 'delete' | 'view' | 'download' | 'file-text' | 'picture-as-pdf';
+  icon?: 'edit' | 'delete' | 'view' | 'download' | 'file-text' | 'picture-as-pdf' | 'send' | 'sync';
   routerLinkFn?: (row: any) => string[];
   clickFn?: (row: any) => void;
   colorClass?: string;
@@ -178,6 +178,8 @@ export class DynamicTableComponent<T = any> {
       download: 'download',
       'file-text': 'description',
       'picture-as-pdf': 'picture_as_pdf',
+      send: 'send',
+      sync: 'sync',
     };
     return icons[action.icon || 'view'] || 'visibility';
   }

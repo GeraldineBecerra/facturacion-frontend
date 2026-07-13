@@ -170,7 +170,7 @@
             <th>Rango</th>
             <th>Disponibles</th>
             <th>Generados</th>
-            <th>Vencimiento</th>
+            <!-- <th>Vencimiento</th> -->
             <th>Estado</th>
           </tr>
         </thead>
@@ -192,7 +192,7 @@
               <td>{{ item.rangoDesde }} - {{ item.rangoHasta }}</td>
               <td>{{ item.foliosDisponibles }}</td>
               <td>{{ item.foliosGenerados }}</td>
-              <td>{{ item.fechaVencimiento ? (item.fechaVencimiento | date:'dd/MM/yyyy') : 'Sin vencimiento' }}</td>
+              <!-- <td>{{ item.fechaVencimiento ? (item.fechaVencimiento | date:'dd/MM/yyyy') : 'Sin vencimiento' }}</td> -->
               <td>
                 <span class="status-pill" [class]="getStatusClass(item.estado)">
                   {{ item.estado }}
@@ -233,11 +233,11 @@
         </div>
 
         <div class="form-grid">
-          <ui-input id="rangoDesde" name="rangoDesde" type="number" label="Folio inicial"
+          <ui-input id="rangoDesde" name="rangoDesde" type="number" label="Folio inicial" placeholder="Ej. 1"
             [(ngModel)]="caf.rangoDesde" [required]="true" />
-          <ui-input id="rangoHasta" name="rangoHasta" type="number" label="Folio final"
+          <ui-input id="rangoHasta" name="rangoHasta" type="number" label="Folio final" placeholder="Ej. 100"
             [(ngModel)]="caf.rangoHasta" [required]="true" />
-          <ui-input id="fechaAutorizacion" name="fechaAutorizacion" type="date" label="Fecha de autorización"
+          <ui-input id="fechaAutorizacion" name="fechaAutorizacion" type="date" label="Fecha de autorización" placeholder="Fecha de autorización"
             [(ngModel)]="caf.fechaAutorizacion" [required]="true" />
           <!-- <ui-input id="fechaVencimiento" name="fechaVencimiento" type="date" label="Fecha de vencimiento"
             [(ngModel)]="caf.fechaVencimiento" /> -->

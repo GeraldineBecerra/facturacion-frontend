@@ -1,4 +1,5 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, DestroyRef, EventEmitter, OnInit, Output } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -7,6 +8,7 @@ import { finalize } from 'rxjs';
 import { AuthService } from '../../../core/auth/auth.service';
 import { EconomicIndicator, EconomicIndicatorsService } from '../../../core/economic-indicators/economic-indicators.service';
 import { TenantContextService } from '../../../core/tenant/tenant-context.service';
+import { ReloadRouteReuseStrategy } from '../../../core/routing/reload-route-reuse.strategy';
 import { CompanyResponse } from '../../../features/company/models/company.model';
 import { CompanyService } from '../../../features/company/services/company.service';
 
@@ -39,7 +41,9 @@ export class NavbarComponent implements OnInit {
         public tenantContext: TenantContextService,
         private companyService: CompanyService,
         private economicIndicatorsService: EconomicIndicatorsService,
+        private destroyRef: DestroyRef,
         private router: Router,
+        private routeReuseStrategy: ReloadRouteReuseStrategy,
     ) {
         this.auth.authState$.subscribe(() => {
             if (this.auth.isAuthenticated()) {
@@ -52,6 +56,14 @@ export class NavbarComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        this.companyService.companiesChanged$
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => {
+                if (this.auth.role() === 'ROLE_SUPER_ADMIN') {
+                    this.loadCompanies();
+                }
+            });
+
         if (this.auth.isAuthenticated()) {
             this.loadIndicators();
         } else {
@@ -118,11 +130,11 @@ export class NavbarComponent implements OnInit {
         this.selectedCompanyId = company.id;
         this.currentCompany = company;
 
-        // Si es ROLE_SUPER_ADMIN, mantener en el dashboard de super-admin
-        const dashboardRoute = this.auth.role() === 'ROLE_SUPER_ADMIN' 
-            ? '/dashboard/super-admin' 
-            : '/dashboard/admin';
-        this.router.navigateByUrl(dashboardRoute);
+        this.routeReuseStrategy.reloadNextNavigation();
+        void this.router.navigateByUrl(this.router.url, {
+            onSameUrlNavigation: 'reload',
+            replaceUrl: true,
+        });
     }
 
     private loadCompanies(): void {

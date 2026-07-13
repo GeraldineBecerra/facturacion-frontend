@@ -7,6 +7,7 @@ import {
   BillingDocument,
   BillingDocumentDetail,
   BillingImportPreview,
+  SiiEstado,
 } from '../models/billing.model';
 
 @Injectable({ providedIn: 'root' })
@@ -39,6 +40,21 @@ export class BillingService {
 
   emitDocument(documentId: number): Observable<BillingDocumentDetail> {
     return this.http.post<BillingDocumentDetail>(`${this.apiUrl}/${documentId}/emitir`, {});
+  }
+
+  /** Paso 1: envía el DTE al SII (simulado). Genera track id y deja el documento en ENVIADO. */
+  enviarSii(documentId: number): Observable<SiiEstado> {
+    return this.http.post<SiiEstado>(`${this.apiUrl}/${documentId}/enviar-sii`, {});
+  }
+
+  /** Paso 2: consulta el estado del envío en el SII (acepta o rechaza). */
+  consultarSii(documentId: number): Observable<SiiEstado> {
+    return this.http.post<SiiEstado>(`${this.apiUrl}/${documentId}/consultar-sii`, {});
+  }
+
+  /** Estado SII actual del documento + historial (solo lectura). */
+  getSiiStatus(documentId: number): Observable<SiiEstado> {
+    return this.http.get<SiiEstado>(`${this.apiUrl}/${documentId}/estado-sii`);
   }
 
   downloadPdf(documentId: number): Observable<Blob> {
