@@ -1,12 +1,15 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, Subject, tap } from 'rxjs';
 import { TokenStorageService } from '../../../core/auth/token-storage.service';
 import { CompanyRequest, CompanyResponse } from '../models/company.model';
 
 @Injectable({ providedIn: 'root' })
 export class CompanyService {
   private readonly apiUrl = '/api/empresas';
+  private readonly companiesChangedSubject = new Subject<void>();
+
+  readonly companiesChanged$ = this.companiesChangedSubject.asObservable();
 
   constructor(
     private http: HttpClient,
@@ -22,16 +25,22 @@ export class CompanyService {
   }
 
   create(request: CompanyRequest): Observable<CompanyResponse> {
-    return this.http.post<CompanyResponse>(this.apiUrl, request);
+    return this.http.post<CompanyResponse>(this.apiUrl, request).pipe(
+      tap(() => this.companiesChangedSubject.next()),
+    );
   }
 
   update(id: number, request: CompanyRequest): Observable<CompanyResponse> {
-    return this.http.put<CompanyResponse>(`${this.apiUrl}/${id}`, request);
+    return this.http.put<CompanyResponse>(`${this.apiUrl}/${id}`, request).pipe(
+      tap(() => this.companiesChangedSubject.next()),
+    );
   }
 
   changeStatus(id: number, active: boolean): Observable<CompanyResponse> {
     const params = new HttpParams().set('activo', active);
-    return this.http.patch<CompanyResponse>(`${this.apiUrl}/${id}/estado`, null, { params });
+    return this.http.patch<CompanyResponse>(`${this.apiUrl}/${id}/estado`, null, { params }).pipe(
+      tap(() => this.companiesChangedSubject.next()),
+    );
   }
 
   uploadLogo(id: number, file: File): Observable<void> {

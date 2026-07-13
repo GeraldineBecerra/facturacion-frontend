@@ -8,6 +8,7 @@ import { roleGuard } from './guards/role.guard';
 import { AuthService } from './auth/auth.service';
 import { TokenStorageService } from './auth/token-storage.service';
 import { authInterceptor } from './interceptors/auth.interceptor';
+import { ReloadRouteReuseStrategy } from './routing/reload-route-reuse.strategy';
 
 function jwt(payload: Record<string, unknown>): string {
   const encode = (value: unknown) =>
@@ -70,6 +71,22 @@ describe('TenantContextService', () => {
 
     expect(service.companyId).toBeNull();
     expect(sessionStorage.getItem('selected_company')).toBeNull();
+  });
+});
+
+describe('ReloadRouteReuseStrategy', () => {
+  it('keeps the layout and reloads only the active leaf view', () => {
+    const strategy = new ReloadRouteReuseStrategy();
+    const leafRouteConfig = {} as any;
+    const leaf = { routeConfig: leafRouteConfig, firstChild: null } as ActivatedRouteSnapshot;
+    const layoutRouteConfig = {} as any;
+    const layout = { routeConfig: layoutRouteConfig, firstChild: leaf } as ActivatedRouteSnapshot;
+
+    strategy.reloadNextNavigation();
+
+    expect(strategy.shouldReuseRoute(layout, layout)).toBeTrue();
+    expect(strategy.shouldReuseRoute(leaf, leaf)).toBeFalse();
+    expect(strategy.shouldReuseRoute(leaf, leaf)).toBeTrue();
   });
 });
 

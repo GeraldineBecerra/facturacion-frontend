@@ -65,6 +65,8 @@ describe('HTTP service contracts', () => {
   it('CompanyService covers read, create, update and logo deletion requests', () => {
     const service = TestBed.inject(CompanyService);
     const company = { rutEmpresa: '76011711-0', razonSocial: 'Empresa' } as any;
+    let companiesChanged = 0;
+    service.companiesChanged$.subscribe(() => companiesChanged++);
 
     service.findById(6).subscribe();
     const find = httpMock.expectOne('/api/empresas/6');
@@ -81,6 +83,8 @@ describe('HTTP service contracts', () => {
     const update = httpMock.expectOne('/api/empresas/6');
     expect(update.request.method).toBe('PUT');
     update.flush({ id: 6 });
+
+    expect(companiesChanged).toBe(2);
 
     service.deleteLogo(6).subscribe();
     const deleteLogo = httpMock.expectOne('/api/empresas/6/logo');

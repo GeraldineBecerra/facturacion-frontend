@@ -1,6 +1,7 @@
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
-import { of, throwError } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
+import { TenantContextService } from '../../../core/tenant/tenant-context.service';
 import { CustomerResponse } from '../models/customer.model';
 import { CustomerService } from '../services/customer.service';
 import { CustomersForm } from './customers-form/customers-form';
@@ -36,6 +37,46 @@ describe('Customers module', () => {
 
     expect(component.filteredCustomers.map((item) => item.id)).toEqual([4]);
     expect(component.activeCustomers).toBe(1);
+  });
+
+  it('calculates customer metrics from creation and update dates', () => {
+    const service = jasmine.createSpyObj<CustomerService>('CustomerService', ['findAll']);
+    const component = new CustomersList({} as Router, service);
+    const now = new Date();
+    const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1, 12).toISOString();
+    const previousMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1, 12).toISOString();
+    const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000).toISOString();
+    const twoDaysAgo = new Date(now.getTime() - 48 * 60 * 60 * 1000).toISOString();
+
+    component.customers = [
+      { ...customer, id: 1, createdAt: thisMonth, updatedAt: oneHourAgo, activo: true },
+      { ...customer, id: 2, createdAt: previousMonth, updatedAt: twoDaysAgo, activo: false },
+    ];
+
+    expect(component.newCustomersThisMonth).toBe(1);
+    expect(component.activeCustomers).toBe(1);
+    expect(component.recentCustomerActivity).toBe(1);
+  });
+
+  it('reloads customers when the selected company changes', () => {
+    const service = jasmine.createSpyObj<CustomerService>('CustomerService', ['findAll']);
+    const companyChanged = new Subject<any>();
+    const companyACustomers = new Subject<CustomerResponse[]>();
+    const companyBCustomers = new Subject<CustomerResponse[]>();
+    const tenantContext = {
+      companyChanged$: companyChanged.asObservable(),
+    } as TenantContextService;
+    service.findAll.and.returnValues(companyACustomers, companyBCustomers);
+    const component = new CustomersList({} as Router, service, tenantContext);
+
+    component.ngOnInit();
+    companyChanged.next({ id: 2 });
+    companyBCustomers.next([{ ...customer, id: 2, razonSocial: 'Empresa B' }]);
+    companyACustomers.next([{ ...customer, id: 1, razonSocial: 'Empresa A' }]);
+
+    expect(service.findAll).toHaveBeenCalledTimes(2);
+    expect(component.customers.map((item) => item.razonSocial)).toEqual(['Empresa B']);
+    component.ngOnDestroy();
   });
 
   it('deletes customers after confirmation', () => {
