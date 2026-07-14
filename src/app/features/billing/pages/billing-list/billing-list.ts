@@ -18,12 +18,6 @@ import { BillingService } from '../../services/billing.service';
   styleUrl: './billing-list.scss',
 })
 export class BillingList implements OnInit {
-  readonly monthlySummary = [
-    { label: 'Ene', value: 32 }, { label: 'Feb', value: 48 }, { label: 'Mar', value: 61 },
-    { label: 'Abr', value: 79 }, { label: 'May', value: 55 }, { label: 'Jun', value: 94 },
-    { label: 'Jul', value: 41 },
-  ];
-
   filters = { folio: '', rutEmisor: '', razonSocial: '', estado: '' };
   documents: BillingDocument[] = [];
   filteredDocuments: BillingDocument[] = [];
@@ -139,6 +133,42 @@ export class BillingList implements OnInit {
 
   get pendingDocuments(): number {
     return this.documents.filter((document) => this.getDocumentStatus(document) === 'BORRADOR').length;
+  }
+
+  get monthlySummary(): { label: string; total: number; value: number }[] {
+    const now = new Date();
+    const months = Array.from({ length: 7 }, (_, index) => {
+      const date = new Date(now.getFullYear(), now.getMonth() - (6 - index), 1);
+      const total = this.documents
+        .filter((document) => this.isInMonth(document.fechaEmision, date))
+        .reduce((sum, document) => sum + Number(document.montoTotal ?? 0), 0);
+      return {
+        label: new Intl.DateTimeFormat('es-CL', { month: 'short' }).format(date).replace('.', ''),
+        total,
+        value: 0,
+      };
+    });
+    const maximum = Math.max(...months.map((month) => month.total), 0);
+    return months.map((month) => ({
+      ...month,
+      value: maximum ? Math.max(month.total ? 5 : 0, Math.round((month.total / maximum) * 100)) : 0,
+    }));
+  }
+
+  get periodComparison(): string {
+    const now = new Date();
+    const currentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const previousMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const currentTotal = this.totalForMonth(currentMonth);
+    const previousTotal = this.totalForMonth(previousMonth);
+    if (!previousTotal) {
+      return currentTotal
+        ? 'Sin facturación registrada en el mes anterior'
+        : 'Sin movimientos en el mes actual';
+    }
+    const variation = ((currentTotal - previousTotal) / previousTotal) * 100;
+    const sign = variation > 0 ? '+' : '';
+    return `${sign}${variation.toLocaleString('es-CL', { maximumFractionDigits: 1 })}% respecto al mes anterior`;
   }
 
   loadDocuments(): void {
@@ -279,6 +309,19 @@ export class BillingList implements OnInit {
 
   private extractSiiError(err: unknown, fallback: string): string {
     return (err as { error?: { mensaje?: string } })?.error?.mensaje ?? fallback;
+  }
+
+  private totalForMonth(month: Date): number {
+    return this.documents
+      .filter((document) => this.isInMonth(document.fechaEmision, month))
+      .reduce((sum, document) => sum + Number(document.montoTotal ?? 0), 0);
+  }
+
+  private isInMonth(dateValue: string, month: Date): boolean {
+    if (!dateValue) return false;
+    const parts = dateValue.slice(0, 10).split('-').map(Number);
+    if (parts.length < 2 || !parts[0] || !parts[1]) return false;
+    return parts[0] === month.getFullYear() && parts[1] - 1 === month.getMonth();
   }
 
   private saveBlob(blob: Blob, fileName: string): void {

@@ -148,6 +148,18 @@ describe('Company module', () => {
     expect(component.error).toContain('RUT');
   });
 
+  it('reads one company from the empty CSV template format', () => {
+    const component = new CompanyForm({ snapshot: { paramMap: { get: () => null } } } as any, {} as Router, {} as CompanyService);
+    const csv = 'rutEmpresa;razonSocial;nombreFantasia;giro;direccion;ciudad;comuna;pais;telefono;sitioWeb;emailPrincipal;emailContabilidad;rutRepresentante;nombreRepresentante;telefonoRepresentante\n' +
+      '12.345.678-9;Empresa Uno;Uno;Servicios;Calle 1;Santiago;Providencia;Chile;123;;contacto@test.cl;;11.111.111-1;Representante;456';
+
+    const result = component.parseCompanyCsv(csv);
+
+    expect(result.rutEmpresa).toBe('12.345.678-9');
+    expect(result.razonSocial).toBe('Empresa Uno');
+    expect(result.nombreRepresentante).toBe('Representante');
+  });
+
   it('surfaces company list load errors', () => {
     const service = jasmine.createSpyObj<CompanyService>('CompanyService', ['findAll']);
     service.findAll.and.returnValue(throwError(() => new Error('boom')));

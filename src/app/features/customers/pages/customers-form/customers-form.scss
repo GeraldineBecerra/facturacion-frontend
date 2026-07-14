@@ -1,4 +1,13 @@
 .customer-form-page { min-height: 100%; padding: 2.5rem; background: rgb(241 245 249 / .8); }
+.template-card { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; max-width: 72rem; margin: 0 auto 1.5rem; padding: 1.25rem 1.5rem; border: 1px solid #bfdbfe; border-radius: 1rem; background: #eff6ff; }
+.template-card h2 { color: #1e3a8a; font-size: 1rem; font-weight: 700; }
+.template-card p { margin-top: .25rem; color: #475569; font-size: .875rem; }
+.template-actions { display: flex; align-items: center; gap: .75rem; flex-shrink: 0; }
+.file-input { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); }
+.upload-button { padding: .55rem 1rem; border-radius: .5rem; background: #1d4ed8; color: white; font-size: .875rem; font-weight: 600; cursor: pointer; }
+.upload-button:hover { background: #1e40af; }
+.rut-field { min-width: 0; }
+.field-error { margin-top: -.85rem; color: #dc2626; font-size: .75rem; }
 .customer-form { display: grid; max-width: 72rem; margin-inline: auto; gap: 1.5rem; }
 .form-card { padding: 2rem; border: 1px solid #e2e8f0; border-radius: 1rem; background: white; box-shadow: 0 1px 2px rgb(15 23 42 / .05); }
 .section-title { margin: 0 0 1.5rem; color: #1e293b; font-size: 1.25rem; font-weight: 700; }

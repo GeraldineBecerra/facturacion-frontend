@@ -145,6 +145,50 @@ describe('Customers module', () => {
     expect(service.create).not.toHaveBeenCalled();
   });
 
+  it('reads one customer from the downloaded CSV format', () => {
+    const component = new CustomersForm({ snapshot: { paramMap: { get: () => null } } } as any, {} as Router, {} as CustomerService);
+    const csv = '\uFEFFrut;razonSocial;nombreFantasia;giro;direccion;ciudad;comuna;region;pais;telefono;email\r\n' +
+      '11.111.111-1;Empresa Uno;Uno;Servicios;Calle 1;Santiago;Providencia;Metropolitana;Chile;+56911111111;uno@test.cl\r\n';
+
+    const result = component.parseCustomerCsv(csv);
+
+    expect(result).toEqual(jasmine.objectContaining({
+      rut: '11.111.111-1',
+      razonSocial: 'Empresa Uno',
+      region: 'Metropolitana',
+      email: 'uno@test.cl',
+    }));
+  });
+
+  it('rejects a CSV containing more than one customer', () => {
+    const component = new CustomersForm({ snapshot: { paramMap: { get: () => null } } } as any, {} as Router, {} as CustomerService);
+    const header = 'rut;razonSocial;nombreFantasia;giro;direccion;ciudad;comuna;region;pais;telefono;email';
+
+    expect(() => component.parseCustomerCsv(`${header}\n1-9;Uno;;;;;;;;;\n2-7;Dos;;;;;;;;;`))
+      .toThrowError('La planilla debe contener un solo cliente.');
+  });
+
+  it('validates the Chilean RUT check digit', () => {
+    const component = new CustomersForm({ snapshot: { paramMap: { get: () => null } } } as any, {} as Router, {} as CustomerService);
+
+    expect(component.isValidRut('12.345.678-5')).toBeTrue();
+    expect(component.isValidRut('12.345.678-9')).toBeFalse();
+    expect(component.isValidRut('6-K')).toBeTrue();
+    expect(component.isValidRut('texto')).toBeFalse();
+  });
+
+  it('reads the other CSV fields when the RUT needs correction', () => {
+    const component = new CustomersForm({ snapshot: { paramMap: { get: () => null } } } as any, {} as Router, {} as CustomerService);
+    const csv = 'rut;razonSocial;nombreFantasia;giro;direccion;ciudad;comuna;region;pais;telefono;email\n' +
+      '12.345.678-9;Empresa para corregir;Empresa;Servicios;Calle 1;Santiago;Providencia;Metropolitana;Chile;+56911111111;empresa@test.cl';
+
+    const result = component.parseCustomerCsv(csv);
+
+    expect(result.rut).toBe('12.345.678-9');
+    expect(result.razonSocial).toBe('Empresa para corregir');
+    expect(component.isValidRut(result.rut)).toBeFalse();
+  });
+
   it('shows customer loading errors', () => {
     const service = jasmine.createSpyObj<CustomerService>('CustomerService', ['findAll']);
     service.findAll.and.returnValue(throwError(() => new Error('boom')));

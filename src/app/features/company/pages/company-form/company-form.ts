@@ -31,6 +31,8 @@ export class CompanyForm implements OnInit, OnDestroy {
   isSaving = false;
   isDeletingLogo = false;
   error: string | null = null;
+  rutEmpresaError: string | null = null;
+  rutRepresentanteError: string | null = null;
   logoError: string | null = null;
   logoFile: File | null = null;
   logoPreviewUrl: string | null = null;
@@ -64,11 +66,75 @@ export class CompanyForm implements OnInit, OnDestroy {
     this.router.navigate(['/empresas']);
   }
 
+  downloadTemplate(): void {
+    const headers = [
+      'rutEmpresa', 'razonSocial', 'nombreFantasia', 'giro', 'direccion', 'ciudad', 'comuna',
+      'pais', 'telefono', 'sitioWeb', 'emailPrincipal', 'emailContabilidad', 'rutRepresentante',
+      'nombreRepresentante', 'telefonoRepresentante',
+    ];
+    const csv = `\uFEFF${headers.join(';')}\r\n`;
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'plantilla-nueva-empresa.csv';
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  async uploadTemplate(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file) return;
+    this.error = null;
+    if (!file.name.toLowerCase().endsWith('.csv')) {
+      this.error = 'La planilla debe ser un archivo CSV.';
+      return;
+    }
+    try {
+      this.empresa = { ...this.empresa, ...this.parseCompanyCsv(await file.text()) };
+      this.validateRuts();
+    } catch (error) {
+      this.error = error instanceof Error ? error.message : 'No fue posible leer la planilla.';
+    }
+  }
+
+  parseCompanyCsv(content: string): CompanyRequest {
+    const lines = content.replace(/^\uFEFF/, '').split(/\r?\n/).filter((line) => line.trim());
+    if (lines.length < 2) throw new Error('La planilla no contiene datos de una empresa.');
+    if (lines.length > 2) throw new Error('La planilla debe contener una sola empresa.');
+    const delimiter = lines[0].includes(';') ? ';' : ',';
+    const headers = this.parseCsvLine(lines[0], delimiter).map((value) => value.trim());
+    const values = this.parseCsvLine(lines[1], delimiter).map((value) => value.trim());
+    const required = [
+      'rutEmpresa', 'razonSocial', 'nombreFantasia', 'giro', 'direccion', 'ciudad', 'comuna',
+      'pais', 'telefono', 'sitioWeb', 'emailPrincipal', 'emailContabilidad', 'rutRepresentante',
+      'nombreRepresentante', 'telefonoRepresentante',
+    ];
+    const missing = required.filter((header) => !headers.includes(header));
+    if (missing.length) throw new Error(`Faltan columnas en la planilla: ${missing.join(', ')}.`);
+    const row = Object.fromEntries(headers.map((header, index) => [header, values[index] ?? '']));
+    if (!row['rutEmpresa'] || !row['razonSocial']) throw new Error('Los campos rutEmpresa y razonSocial son obligatorios.');
+    if (row['emailPrincipal'] && !this.isValidEmail(row['emailPrincipal'])) throw new Error('El email principal no es válido.');
+    if (row['emailContabilidad'] && !this.isValidEmail(row['emailContabilidad'])) throw new Error('El email de contabilidad no es válido.');
+    return Object.fromEntries(required.map((header) => [header, row[header]])) as unknown as CompanyRequest;
+  }
+
+  validateRuts(): void {
+    this.rutEmpresaError = !this.empresa.rutEmpresa.trim()
+      ? 'El RUT de la empresa es obligatorio.'
+      : this.isValidRut(this.empresa.rutEmpresa) ? null : 'El RUT de la empresa no es válido.';
+    this.rutRepresentanteError = this.empresa.rutRepresentante.trim() && !this.isValidRut(this.empresa.rutRepresentante)
+      ? 'El RUT del representante no es válido.' : null;
+  }
+
   guardar(form?: NgForm): void {
     if (this.isSaving) return;
 
-    if (form?.invalid) {
-      form.control.markAllAsTouched();
+    this.validateRuts();
+
+    if (form?.invalid || this.rutEmpresaError || this.rutRepresentanteError) {
+      form?.control.markAllAsTouched();
       this.error = 'Completa el RUT y la razón social antes de guardar.';
       return;
     }
@@ -250,5 +316,41 @@ export class CompanyForm implements OnInit, OnDestroy {
       return 'No hay conexión con el backend. Verifica que esté ejecutándose en http://localhost:8080.';
     }
     return `No fue posible guardar la empresa (${error.status}). Revisa los datos e intenta nuevamente.`;
+  }
+
+  private isValidRut(rut: string): boolean {
+    const cleanRut = rut.replace(/[.\-\s]/g, '').toUpperCase();
+    if (!/^\d{1,8}[0-9K]$/.test(cleanRut)) return false;
+    const body = cleanRut.slice(0, -1);
+    let sum = 0;
+    let multiplier = 2;
+    for (let index = body.length - 1; index >= 0; index--) {
+      sum += Number(body[index]) * multiplier;
+      multiplier = multiplier === 7 ? 2 : multiplier + 1;
+    }
+    const result = 11 - (sum % 11);
+    const verifier = result === 11 ? '0' : result === 10 ? 'K' : String(result);
+    return cleanRut.slice(-1) === verifier;
+  }
+
+  private isValidEmail(email: string): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  private parseCsvLine(line: string, delimiter: string): string[] {
+    const values: string[] = [];
+    let value = '';
+    let quoted = false;
+    for (let index = 0; index < line.length; index++) {
+      const character = line[index];
+      if (character === '"') {
+        if (quoted && line[index + 1] === '"') { value += '"'; index++; }
+        else quoted = !quoted;
+      } else if (character === delimiter && !quoted) { values.push(value); value = ''; }
+      else value += character;
+    }
+    if (quoted) throw new Error('La planilla contiene comillas sin cerrar.');
+    values.push(value);
+    return values;
   }
 }

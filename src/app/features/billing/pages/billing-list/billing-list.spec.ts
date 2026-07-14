@@ -96,6 +96,23 @@ describe('BillingList integration', () => {
     expect(component.pendingDocuments).toBe(1);
   });
 
+  it('builds the monthly chart and comparison from document amounts', () => {
+    const now = new Date();
+    const currentDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-10`;
+    const previous = new Date(now.getFullYear(), now.getMonth() - 1, 10);
+    const previousDate = `${previous.getFullYear()}-${String(previous.getMonth() + 1).padStart(2, '0')}-10`;
+    billingService.findAll.and.returnValue(of([
+      { ...documents[0], fechaEmision: currentDate, montoTotal: 200 },
+      { ...documents[1], fechaEmision: previousDate, montoTotal: 100 },
+    ]));
+
+    createComponent();
+
+    expect(component.monthlySummary.at(-1)?.total).toBe(200);
+    expect(component.monthlySummary.at(-2)?.total).toBe(100);
+    expect(component.periodComparison).toContain('+100%');
+  });
+
   it('filters by alternate invoice number and state', () => {
     billingService.findAll.and.returnValue(of(documents));
     createComponent();
