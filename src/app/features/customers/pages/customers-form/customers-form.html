@@ -4,6 +4,20 @@
     subtitle="Registra los datos comerciales, contactos y canales de cobranza."
   />
 
+  @if (!isEditMode) {
+    <section class="template-card">
+      <div>
+        <h2>Completar desde una planilla</h2>
+        <p>Descarga el CSV, completa una sola fila y súbelo para rellenar el formulario.</p>
+      </div>
+      <div class="template-actions">
+        <ui-button type="button" variant="secondary" (clicked)="downloadTemplate()">Descargar plantilla CSV</ui-button>
+        <label class="upload-button" for="customerCsv">Subir planilla</label>
+        <input id="customerCsv" class="file-input" type="file" accept=".csv,text/csv" (change)="uploadTemplate($event)" />
+      </div>
+    </section>
+  }
+
   @if (error) {
     <div class="error-message">{{ error }}</div>
   }
@@ -15,7 +29,7 @@
     <section class="form-card">
       <h2 class="section-title">Datos del cliente</h2>
 
-      <div class="status-grid">
+      <!-- <div class="status-grid">
         <div class="checkbox-card">
           <ui-checkbox name="agent" label="Es agente" [(ngModel)]="customer.agent" />
         </div>
@@ -25,11 +39,16 @@
         <div class="checkbox-card">
           <ui-checkbox name="foreign" label="Extranjero" [(ngModel)]="customer.foreign" />
         </div>
-      </div>
+      </div> -->
 
       <div class="form-grid">
-        <ui-input name="rut" label="RUT" placeholder="12.345.678-9"
-          [(ngModel)]="customer.rut" [required]="true" />
+        <div class="rut-field">
+          <ui-input name="rut" label="RUT" placeholder="12.345.678-5"
+            [(ngModel)]="customer.rut" (ngModelChange)="validateRut()" [required]="true" />
+          @if (rutError) {
+            <p class="field-error">{{ rutError }}</p>
+          }
+        </div>
         <ui-input className="md:col-span-2" name="businessName" label="Razón social"
           placeholder="Empresa S.A." [(ngModel)]="customer.businessName" [required]="true" />
         <ui-input name="shortName" label="Nombre corto" placeholder="Mi Empresa"
@@ -57,6 +76,7 @@
           placeholder="Avenida Siempre Viva 123" [(ngModel)]="customer.address" />
         <ui-input name="district" label="Comuna" placeholder="Ej. Providencia" [(ngModel)]="customer.district" />
         <ui-input name="city" label="Ciudad" placeholder="Ej. Santiago" [(ngModel)]="customer.city" />
+        <ui-input name="region" label="Región" placeholder="Ej. Metropolitana" [(ngModel)]="customer.region" />
         <ui-input name="email" type="email" label="Correo electrónico"
           placeholder="contacto@empresa.cl" [(ngModel)]="customer.email" />
         <ui-input className="md:col-span-3" name="businessActivity" label="Giro"

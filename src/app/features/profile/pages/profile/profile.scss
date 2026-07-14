@@ -214,7 +214,7 @@ dd {
   border-radius: .5rem;
   background: #2563eb;
   padding: .4rem .75rem;
-  color: white;
+  color: #fff !important;
   font-size: .875rem;
   font-weight: 700;
   transition: background .2s ease;
@@ -222,6 +222,7 @@ dd {
 
 .logo-file-button:hover {
   background: #1d4ed8;
+  color: #fff !important;
 }
 
 .logo-buttons input {
