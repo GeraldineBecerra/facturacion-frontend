@@ -141,6 +141,7 @@
   padding: .5rem 1rem;
   font-size: .875rem;
   font-weight: 700;
+  color: white !important;
 }
 
 .logo-file-button {
@@ -199,3 +200,22 @@
     flex-direction: column;
   }
 }
+.template-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid #bfdbfe;
+  border-radius: 1rem;
+  background: #eff6ff;
+}
+
+.template-card h2 { color: #1e3a8a; font-size: 1rem; font-weight: 700; }
+.template-card p { margin-top: .25rem; color: #475569; font-size: .875rem; }
+.template-actions { display: flex; align-items: center; gap: .75rem; flex-shrink: 0; }
+.template-file-input { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); }
+.template-upload-button { cursor: pointer; border-radius: .5rem; padding: .55rem 1rem; color: #fff; background: #2563eb; font-size: .875rem; font-weight: 700; }
+.template-upload-button:hover { color: #fff; background: #1d4ed8; }
+.rut-error { margin-top: -.75rem; color: #dc2626; font-size: .75rem; }

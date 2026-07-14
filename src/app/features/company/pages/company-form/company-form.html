@@ -8,6 +8,20 @@
     </p>
   </header>
 
+  @if (!isEditMode) {
+    <section class="template-card">
+      <div>
+        <h2>Completar desde una planilla</h2>
+        <p>Descarga el CSV vacío, completa una sola fila y súbelo para rellenar el formulario.</p>
+      </div>
+      <div class="template-actions">
+        <ui-button type="button" variant="secondary" (clicked)="downloadTemplate()">Descargar plantilla CSV</ui-button>
+        <label class="template-upload-button" for="companyCsv">Subir planilla</label>
+        <input id="companyCsv" class="template-file-input" type="file" accept=".csv,text/csv" (change)="uploadTemplate($event)" />
+      </div>
+    </section>
+  }
+
   <div class="card">
     @if (error) {
       <div class="error-message">{{ error }}</div>
@@ -29,7 +43,11 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="form-field">
             <ui-input id="rutEmpresa" name="rutEmpresa" label="RUT empresa"
-              [(ngModel)]="empresa.rutEmpresa" [required]="true" placeholder="Ej. 76.123.456-K" />
+              [(ngModel)]="empresa.rutEmpresa" (ngModelChange)="validateRuts()"
+              [required]="true" placeholder="Ej. 76.123.456-K" />
+            @if (rutEmpresaError) {
+              <p class="rut-error">{{ rutEmpresaError }}</p>
+            }
           </div>
 
           <div class="form-field">
@@ -177,7 +195,11 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="form-field">
             <ui-input id="rutRepresentante" name="rutRepresentante" label="RUT representante"
-              [(ngModel)]="empresa.rutRepresentante" placeholder="Ej. 12.345.678-9" />
+              [(ngModel)]="empresa.rutRepresentante" (ngModelChange)="validateRuts()"
+              placeholder="Ej. 12.345.678-5" />
+            @if (rutRepresentanteError) {
+              <p class="rut-error">{{ rutRepresentanteError }}</p>
+            }
           </div>
 
           <div class="form-field">

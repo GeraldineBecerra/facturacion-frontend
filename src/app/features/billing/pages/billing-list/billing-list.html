@@ -78,7 +78,7 @@
 
         <div class="summary-total">
           <strong>{{ receivedTotal | currency:'CLP':'symbol-narrow':'1.0-0':'es-CL' }}</strong>
-          <span>+12,5% respecto al período anterior</span>
+          <span>{{ periodComparison }}</span>
         </div>
       </div>
 
@@ -99,7 +99,7 @@
 
       <div class="chart" aria-label="Resumen mensual de facturación">
         @for (item of monthlySummary; track item.label) {
-          <div class="chart-column">
+          <div class="chart-column" [title]="item.total | currency:'CLP':'symbol-narrow':'1.0-0':'es-CL'">
             <div class="chart-track">
               <div class="chart-bar" [style.height.%]="item.value"></div>
             </div>
