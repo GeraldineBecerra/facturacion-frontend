@@ -80,7 +80,11 @@ export class NavbarComponent implements OnInit {
         const companyId = this.auth.companyId();
         if (companyId) {
             this.selectedCompanyId = companyId;
-            this.setCurrentCompanyFromToken(companyId);
+            if (this.auth.role() === 'ROLE_ADMIN') {
+                this.loadCurrentCompany(companyId);
+            } else {
+                this.setCurrentCompanyFromToken(companyId);
+            }
         }
     }
 
@@ -205,6 +209,16 @@ export class NavbarComponent implements OnInit {
             razonSocial: companyName || 'Empresa activa',
             nombreFantasia: companyName || 'Empresa activa',
         } as CompanyResponse;
+    }
+
+    private loadCurrentCompany(companyId: number): void {
+        this.setCurrentCompanyFromToken(companyId);
+        this.isLoadingCompanies = true;
+        this.companyService.findById(companyId)
+            .pipe(finalize(() => this.isLoadingCompanies = false))
+            .subscribe({
+                next: (company) => this.currentCompany = company,
+            });
     }
 
 }

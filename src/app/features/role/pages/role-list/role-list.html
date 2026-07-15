@@ -13,6 +13,7 @@
       <p>El backend agregará automáticamente el prefijo ROLE_ si no lo escribes.</p>
     </div>
     <form #roleForm="ngForm" (ngSubmit)="save(roleForm)">
+      <p class="required-fields-note"><span class="required-marker">*</span> Campos obligatorios</p>
       <div class="form-grid">
         <ui-input name="nombre" label="Nombre técnico" placeholder="Ej. AUDITOR"
           [(ngModel)]="role.nombre" [required]="true" />

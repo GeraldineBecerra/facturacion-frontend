@@ -165,3 +165,65 @@
   padding-left: 1rem;
   list-style: disc;
 }
+.processing-overlay {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  background: rgb(15 23 42 / .58);
+  backdrop-filter: blur(2px);
+}
+
+.processing-dialog {
+  width: min(100%, 25rem);
+  padding: 2rem;
+  border-radius: 1rem;
+  background: white;
+  box-shadow: 0 24px 60px rgb(15 23 42 / .3);
+  text-align: center;
+}
+
+.processing-dialog h2 {
+  margin-top: 1rem;
+  color: #0f172a;
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.processing-dialog p {
+  margin-top: .5rem;
+  color: #64748b;
+  font-size: .875rem;
+  line-height: 1.5;
+}
+
+.processing-spinner {
+  display: inline-block;
+  width: 3rem;
+  height: 3rem;
+  border: 4px solid #dbeafe;
+  border-top-color: #2563eb;
+  border-radius: 9999px;
+  animation: billing-spin .8s linear infinite;
+}
+
+@keyframes billing-spin {
+  to { transform: rotate(360deg); }
+}
+.automatic-folio {
+  display: flex;
+  min-height: 2.5rem;
+  align-items: center;
+  gap: .65rem;
+  padding: .55rem .75rem;
+  border: 1px solid #bfdbfe;
+  border-radius: .5rem;
+  color: #1e40af;
+  background: #eff6ff;
+}
+
+.automatic-folio .material-symbols-outlined { font-size: 1.2rem; }
+.automatic-folio strong { display: block; font-size: .8rem; }
+.automatic-folio small { display: block; margin-top: .1rem; color: #64748b; font-size: .7rem; }

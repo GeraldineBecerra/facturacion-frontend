@@ -64,7 +64,7 @@
       </a>
       }
 
-      @if (auth.hasAnyRole(['ROLE_SUPER_ADMIN'])) {
+      @if (auth.hasAnyRole(['ROLE_SUPER_ADMIN','ROLE_ADMIN'])) {
       <a routerLink="/folios" routerLinkActive="bg-slate-100 text-blue-600"
         class="h-10 px-3 rounded-xl flex items-center gap-3 text-sm text-slate-600 hover:bg-slate-100 transition-colors">
         <lucide-icon [img]="LibraryBig" class="w-4 h-4 shrink-0"></lucide-icon>
@@ -98,11 +98,13 @@
       </a>
       }
 
-      <a routerLink="/perfil" routerLinkActive="bg-slate-100 text-blue-600"
-        class="w-full h-10 px-3 rounded-xl text-slate-600 hover:bg-slate-100 transition-colors flex items-center gap-2">
-        <span class="material-symbols-outlined text-[18px]">account_circle</span>
-        @if (!collapsed) { <span>Perfil</span> }
-      </a>
+      @if (auth.hasAnyRole(['ROLE_SUPER_ADMIN', 'ROLE_ADMIN'])) {
+        <a routerLink="/perfil" routerLinkActive="bg-slate-100 text-blue-600"
+          class="w-full h-10 px-3 rounded-xl text-slate-600 hover:bg-slate-100 transition-colors flex items-center gap-2">
+          <span class="material-symbols-outlined text-[18px]">account_circle</span>
+          @if (!collapsed) { <span>Perfil</span> }
+        </a>
+      }
 
       <!-- <button
         class="w-full h-10 px-3 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">

@@ -61,6 +61,27 @@ export interface BillingDocumentDetail {
   guiaDespacho: unknown | null;
 }
 
+export interface BillingCreateRequest {
+  codigoTipoDocumento: number;
+  clienteId: number;
+}
+
+export interface BillingUpdateRequest {
+  clienteId?: number;
+  fechaVencimiento?: string;
+  observaciones?: string;
+  moneda?: string;
+  tipoCambio?: number;
+}
+
+export interface BillingDetailCreateRequest {
+  productoId?: number;
+  descripcion: string;
+  cantidad: number;
+  unidadMedida: string;
+  precioUnitario: number;
+}
+
 /** Registro de un intento de envío al SII (EnvioSiiResponse del backend). */
 export interface SiiEnvio {
   id: number;

@@ -222,6 +222,7 @@
       </div>
 
       <form #cafForm="ngForm" (ngSubmit)="uploadCaf(cafForm)" class="caf-form">
+        <p class="required-fields-note"><span class="required-marker">*</span> Campos obligatorios</p>
         <div class="select-field">
           <label for="codigoTipoDocumento">Tipo de documento <span>*</span></label>
           <select id="codigoTipoDocumento" name="codigoTipoDocumento" [(ngModel)]="caf.codigoTipoDocumento" required>

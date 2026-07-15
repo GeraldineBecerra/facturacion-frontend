@@ -6,7 +6,10 @@ import { TenantContextService } from '../../../core/tenant/tenant-context.servic
 import {
   BillingDocument,
   BillingDocumentDetail,
+  BillingCreateRequest,
+  BillingDetailCreateRequest,
   BillingImportPreview,
+  BillingUpdateRequest,
   SiiEstado,
 } from '../models/billing.model';
 
@@ -24,6 +27,18 @@ export class BillingService {
     let params = new HttpParams();
     if (filters?.estado) params = params.set('estado', filters.estado);
     return this.http.get<BillingDocument[]>(this.apiUrl, { params });
+  }
+
+  create(request: BillingCreateRequest): Observable<BillingDocument> {
+    return this.http.post<BillingDocument>(this.apiUrl, request);
+  }
+
+  updateDraft(documentId: number, request: BillingUpdateRequest): Observable<BillingDocumentDetail> {
+    return this.http.put<BillingDocumentDetail>(`${this.apiUrl}/${documentId}`, request);
+  }
+
+  addDetail(documentId: number, request: BillingDetailCreateRequest): Observable<BillingDocumentDetail> {
+    return this.http.post<BillingDocumentDetail>(`${this.apiUrl}/${documentId}/detalles`, request);
   }
 
   previewTxt(file: File): Observable<BillingImportPreview> {

@@ -122,4 +122,24 @@ describe('Profile module', () => {
 
     expect(component.error).toContain('empresa asociada');
   });
+
+  it('shows ROLE_USER profile data from the session when company administration is forbidden', () => {
+    const auth = jasmine.createSpyObj<AuthService>('AuthService', ['role', 'companyId', 'companyName', 'hasAnyRole']);
+    const service = jasmine.createSpyObj<CompanyService>('CompanyService', ['findById', 'getLogo']);
+    const tenant = jasmine.createSpyObj<TenantContextService>('TenantContextService', [], { companyId: null });
+    auth.companyId.and.returnValue(6);
+    auth.companyName.and.returnValue('Empresa del Usuario');
+    auth.role.and.returnValue('ROLE_USER');
+    auth.hasAnyRole.and.returnValue(false);
+    service.findById.and.returnValue(throwError(() => ({ status: 403 })));
+    service.getLogo.and.returnValue(throwError(() => ({ status: 404 })));
+    const component = new Profile(auth, service, tenant);
+
+    component.loadCompany();
+
+    expect(component.error).toBeNull();
+    expect(component.company?.id).toBe(6);
+    expect(component.company?.razonSocial).toBe('Empresa del Usuario');
+    expect(component.canManageLogo).toBeFalse();
+  });
 });

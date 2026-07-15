@@ -1,4 +1,14 @@
 <div class="billing-form-page">
+  @if (isSaving) {
+    <div class="processing-overlay" role="status" aria-live="assertive" aria-busy="true">
+      <div class="processing-dialog">
+        <span class="processing-spinner" aria-hidden="true"></span>
+        <h2>Creando factura</h2>
+        <p>Estamos emitiendo el documento y preparando el PDF. No cierres esta página.</p>
+      </div>
+    </div>
+  }
+
   <div class="page-heading">
     <app-page-header
       headerTitle="Nueva factura"
@@ -20,6 +30,7 @@
   </div>
 
   <form class="billing-form" (ngSubmit)="saveBilling()">
+    <p class="required-fields-note"><span class="required-marker">*</span> Campos obligatorios</p>
     <div class="two-column-layout">
       <section class="form-card main-column">
         <h2 class="section-title">Identificación del cliente</h2>
@@ -67,8 +78,16 @@
             </select>
           </div>
 
-          <ui-input name="folio" label="Folio" placeholder="Ej. 12345"
-            [(ngModel)]="billing.folio" [required]="true" />
+          <div class="field">
+            <label>Folio</label>
+            <div class="automatic-folio" aria-label="Folio asignado automáticamente">
+              <span class="material-symbols-outlined" aria-hidden="true">auto_awesome</span>
+              <div>
+                <strong>Asignación automática</strong>
+                <small>Se asignará desde el CAF al emitir la factura.</small>
+              </div>
+            </div>
+          </div>
 
           <div class="field">
             <label for="condicionPago">Condición de pago</label>
@@ -129,7 +148,7 @@
 
       <section class="form-card upload-card">
         <h2 class="section-title">Importar archivo</h2>
-        <p>Sube un archivo CSV o XML para cargar datos del documento.</p>
+        <p>Sube un archivo XML para cargar datos del documento.</p>
 
         <label class="file-picker" for="billingFile">
           <span class="material-symbols-outlined">cloud_upload</span>
@@ -260,7 +279,9 @@
       <ui-button type="button" variant="secondary" size="lg" (clicked)="cancel()">
         Cancelar
       </ui-button>
-      <ui-button type="submit" size="lg">Guardar factura</ui-button>
+      <ui-button type="submit" size="lg" [loading]="isSaving" [disabled]="isSaving || hasImportError">
+        {{ isSaving ? 'Creando factura...' : 'Guardar factura' }}
+      </ui-button>
     </div>
   </form>
 </div>

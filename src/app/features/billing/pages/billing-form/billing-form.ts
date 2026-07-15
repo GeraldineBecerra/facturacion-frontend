@@ -2,14 +2,14 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { finalize, switchMap } from 'rxjs';
+import { concatMap, finalize, from, last, map, switchMap, throwError } from 'rxjs';
 import { PageHeaderComponent } from '../../../../shared/components/header/page-header.component';
 import { UiButtonComponent } from '../../../../shared/ui/ui-button/ui-button.component';
 import { UiCheckboxComponent } from '../../../../shared/ui/ui-checkbox/ui-checkbox.component';
 import { UiInputComponent } from '../../../../shared/ui/ui-input/ui-input.component';
 import { CustomerResponse } from '../../../customers/models/customer.model';
 import { CustomerService } from '../../../customers/services/customer.service';
-import { BillingDocument, BillingImportPreview } from '../../models/billing.model';
+import { BillingDetailCreateRequest, BillingDocument, BillingImportPreview } from '../../models/billing.model';
 import { BillingService } from '../../services/billing.service';
 
 interface BillingFormModel {
@@ -219,12 +219,85 @@ export class BillingForm {
     }
 
     if (!this.selectedImportFile) {
-      console.log('Factura a guardar', this.buildPayload());
-      this.router.navigate(['/facturacion']);
+      this.saveManualBilling();
       return;
     }
 
     this.generateInvoicePdf(this.selectedImportFile);
+  }
+
+  private saveManualBilling(): void {
+    const validationError = this.validateManualBilling();
+    if (validationError) {
+      this.importError = validationError;
+      return;
+    }
+
+    this.isSaving = true;
+    this.isGeneratingPdf = true;
+    this.importError = null;
+    this.importSuccess = 'Creando y emitiendo factura manual...';
+    const requestedRut = this.normalizeRut(this.billing.rutReceptor);
+
+    this.customerService.findAll().pipe(
+      map((customers) => customers.find((customer) => this.normalizeRut(customer.rut) === requestedRut)),
+      switchMap((customer) => customer
+        ? this.billingService.create({
+            codigoTipoDocumento: Number(this.billing.tipoDocumento),
+            clienteId: customer.id,
+          })
+        : throwError(() => new Error('El cliente no existe en la empresa seleccionada. Créalo antes de facturar.'))),
+      switchMap((document) => this.billingService.updateDraft(document.id, {
+        clienteId: document.clienteId,
+        ...(this.billing.fechaVencimiento ? { fechaVencimiento: this.billing.fechaVencimiento } : {}),
+        observaciones: this.billing.observaciones,
+        moneda: this.billing.moneda,
+        tipoCambio: Number(this.billing.tipoCambio || 1),
+      }).pipe(map(() => document.id))),
+      switchMap((documentId) => from(this.details).pipe(
+        concatMap((detail) => this.billingService.addDetail(documentId, this.toDetailRequest(detail))),
+        last(),
+        map(() => documentId),
+      )),
+      switchMap((documentId) => this.billingService.emitDocument(documentId)),
+    ).subscribe({
+      next: (result) => {
+        this.generatedDocumentId = result.documento.id;
+        this.downloadPdf(result.documento.id, this.getInvoiceNumber(result.documento));
+      },
+      error: (error) => {
+        this.isSaving = false;
+        this.isGeneratingPdf = false;
+        this.importSuccess = null;
+        this.importError = error.error?.mensaje
+          ?? error.error?.message
+          ?? error.message
+          ?? 'No fue posible crear la factura manual.';
+      },
+    });
+  }
+
+  private validateManualBilling(): string | null {
+    if (!this.billing.rutReceptor.trim()) return 'Ingresa el RUT de un cliente registrado.';
+    if (!this.billing.tipoDocumento) return 'Selecciona el tipo de documento.';
+    if (!this.details.length) return 'Agrega al menos una línea de detalle.';
+    if (this.details.some((detail) => !detail.descripcion.trim())) return 'La descripción de cada línea es obligatoria.';
+    if (this.details.some((detail) => Number(detail.cantidad) <= 0)) return 'La cantidad debe ser mayor a cero.';
+    if (this.details.some((detail) => Number(detail.precioUnitario) < 0)) return 'El precio unitario no puede ser negativo.';
+    return null;
+  }
+
+  private toDetailRequest(detail: BillingDetail): BillingDetailCreateRequest {
+    return {
+      descripcion: detail.descripcion.trim(),
+      cantidad: Number(detail.cantidad),
+      unidadMedida: detail.unidadMedida,
+      precioUnitario: Number(detail.precioUnitario) * (1 - Number(detail.descuento || 0) / 100),
+    };
+  }
+
+  private normalizeRut(rut: string): string {
+    return rut.replace(/[.\-\s]/g, '').toUpperCase();
   }
 
   private buildPayload() {
@@ -348,11 +421,13 @@ export class BillingForm {
           this.importError = null;
           this.importSuccess = `Factura ${invoiceNumber ? `NÂ° ${invoiceNumber}` : `#${documentId}`} creada y PDF descargado correctamente.`;
           this.isSaving = false;
+          this.router.navigate(['/facturacion']);
         },
         error: () => {
           this.isSaving = false;
           this.importSuccess = `La factura #${documentId} fue creada, pero no se pudo descargar el PDF.`;
           this.importError = 'Puedes reintentar la descarga sin volver a subir el archivo.';
+          this.router.navigate(['/facturacion']);
         },
       });
   }

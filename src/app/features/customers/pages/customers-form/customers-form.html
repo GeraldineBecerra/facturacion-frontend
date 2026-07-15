@@ -26,6 +26,7 @@
     <div class="loading-message">Cargando cliente...</div>
   } @else {
   <form #customerForm="ngForm" class="customer-form" (ngSubmit)="saveCustomer(customerForm)">
+    <p class="required-fields-note"><span class="required-marker">*</span> Campos obligatorios</p>
     <section class="form-card">
       <h2 class="section-title">Datos del cliente</h2>
 

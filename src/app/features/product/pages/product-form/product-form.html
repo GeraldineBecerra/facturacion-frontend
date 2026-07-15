@@ -13,6 +13,7 @@
       <p class="loading-message">Cargando producto...</p>
     } @else {
       <form #productForm="ngForm" (ngSubmit)="save(productForm)">
+        <p class="required-fields-note"><span class="required-marker">*</span> Campos obligatorios</p>
         <div class="form-grid">
           <ui-input id="codigo" name="codigo" label="Código" placeholder="Ej. PROD-001"
             [(ngModel)]="product.codigo" [required]="true" />
