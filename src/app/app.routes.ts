@@ -137,7 +137,7 @@ export const routes: Routes = [
                 loadComponent: () => import('./features/folio/pages/folio-admin/folio-admin')
                     .then((m) => m.FolioAdmin),
                 canActivate: [roleGuard],
-                data: { roles: ['ROLE_SUPER_ADMIN'] }
+                data: { roles: ['ROLE_SUPER_ADMIN', 'ROLE_ADMIN'] }
             },
             {
                 path: 'roles',
@@ -159,7 +159,9 @@ export const routes: Routes = [
             },
             {
                 path: 'perfil',
-                component: Profile
+                component: Profile,
+                canActivate: [roleGuard],
+                data: { roles: ['ROLE_SUPER_ADMIN', 'ROLE_ADMIN'] }
             }
         ]
     },

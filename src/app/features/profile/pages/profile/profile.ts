@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { finalize } from 'rxjs';
 import { AuthService } from '../../../../core/auth/auth.service';
@@ -69,6 +70,10 @@ export class Profile implements OnInit, OnDestroy {
     return this.auth.role() === 'ROLE_SUPER_ADMIN' && !this.tenantContext.companyId;
   }
 
+  get canManageLogo(): boolean {
+    return this.auth.hasAnyRole(['ROLE_SUPER_ADMIN', 'ROLE_ADMIN']);
+  }
+
   loadCompany(): void {
     const companyId = this.auth.companyId() ?? this.tenantContext.companyId;
     if (!companyId) {
@@ -90,7 +95,13 @@ export class Profile implements OnInit, OnDestroy {
           this.company = company;
           this.loadLogo(company.id);
         },
-        error: () => {
+        error: (error: HttpErrorResponse) => {
+          if (error.status === 403 && this.auth.role() === 'ROLE_USER') {
+            this.company = this.sessionCompany(companyId);
+            this.error = null;
+            this.loadLogo(companyId);
+            return;
+          }
           this.error = 'No fue posible cargar los datos de la empresa asociada a tu sesión.';
         },
       });
@@ -162,6 +173,31 @@ export class Profile implements OnInit, OnDestroy {
       next: (logo) => this.setLogoPreview(URL.createObjectURL(logo)),
       error: () => this.revokeLogoPreview(),
     });
+  }
+
+  private sessionCompany(companyId: number): CompanyResponse {
+    const companyName = this.auth.companyName() || 'Empresa asociada';
+    return {
+      id: companyId,
+      rutEmpresa: '',
+      razonSocial: companyName,
+      nombreFantasia: companyName,
+      giro: '',
+      direccion: '',
+      ciudad: '',
+      comuna: '',
+      pais: '',
+      telefono: '',
+      sitioWeb: '',
+      emailPrincipal: '',
+      emailContabilidad: '',
+      rutRepresentante: '',
+      nombreRepresentante: '',
+      telefonoRepresentante: '',
+      activo: true,
+      createdAt: '',
+      updatedAt: null,
+    };
   }
 
   private setLogoPreview(url: string): void {

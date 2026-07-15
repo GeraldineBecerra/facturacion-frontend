@@ -51,8 +51,11 @@ describe('Billing form module', () => {
       'importTxt',
       'emitDocument',
       'downloadPdf',
+      'create',
+      'updateDraft',
+      'addDetail',
     ]);
-    customerService = jasmine.createSpyObj<CustomerService>('CustomerService', ['findById']);
+    customerService = jasmine.createSpyObj<CustomerService>('CustomerService', ['findById', 'findAll']);
     component = new BillingForm(router, billingService, customerService);
   });
 
@@ -130,15 +133,52 @@ describe('Billing form module', () => {
     expect(billingService.emitDocument).toHaveBeenCalledWith(9);
     expect(billingService.downloadPdf).toHaveBeenCalledWith(9);
     expect(component.importSuccess).toContain('123');
+    expect(router.navigate).toHaveBeenCalledWith(['/facturacion']);
   });
 
-  it('navigates back when saving a manual billing payload', () => {
-    spyOn(console, 'log');
-    component.selectedImportFile = null;
+  it('returns to the invoice list when the invoice was created but its PDF download fails', () => {
+    const file = new File(['txt'], 'factura.txt');
+    component.selectedImportFile = file;
+    billingService.importTxt.and.returnValue(of({ documento: { id: 9 } as any, detalles: [], referencias: [], guiaDespacho: null }));
+    billingService.emitDocument.and.returnValue(of({ documento: { id: 9, folio: 123 } as any, detalles: [], referencias: [], guiaDespacho: null }));
+    billingService.downloadPdf.and.returnValue(throwError(() => new Error('PDF error')));
 
     component.saveBilling();
 
     expect(router.navigate).toHaveBeenCalledWith(['/facturacion']);
+  });
+
+  it('creates, adds details and emits a manual invoice', () => {
+    spyOn(URL, 'createObjectURL').and.returnValue('blob:pdf');
+    spyOn(URL, 'revokeObjectURL');
+    spyOn(document, 'createElement').and.returnValue({ click: jasmine.createSpy('click') } as any);
+    component.selectedImportFile = null;
+    component.billing.rutReceptor = customer.rut;
+    component.details = [{ descripcion: 'Servicio', cantidad: 2, unidadMedida: 'UN', precioUnitario: 1000, descuento: 0 }];
+    customerService.findAll.and.returnValue(of([customer]));
+    billingService.create.and.returnValue(of({ id: 15, clienteId: 1 } as any));
+    billingService.updateDraft.and.returnValue(of({ documento: { id: 15 } } as any));
+    billingService.addDetail.and.returnValue(of({ documento: { id: 15 } } as any));
+    billingService.emitDocument.and.returnValue(of({ documento: { id: 15, folio: 321 } } as any));
+    billingService.downloadPdf.and.returnValue(of(new Blob(['pdf'], { type: 'application/pdf' })));
+
+    component.saveBilling();
+
+    expect(billingService.create).toHaveBeenCalledWith({ codigoTipoDocumento: 33, clienteId: 1 });
+    expect(billingService.addDetail).toHaveBeenCalledWith(15, jasmine.objectContaining({ descripcion: 'Servicio', cantidad: 2 }));
+    expect(billingService.emitDocument).toHaveBeenCalledWith(15);
+    expect(router.navigate).toHaveBeenCalledWith(['/facturacion']);
+  });
+
+  it('does not create a manual invoice for an unknown customer', () => {
+    component.billing.rutReceptor = '99.999.999-9';
+    component.details[0] = { descripcion: 'Servicio', cantidad: 1, unidadMedida: 'UN', precioUnitario: 1000, descuento: 0 };
+    customerService.findAll.and.returnValue(of([customer]));
+
+    component.saveBilling();
+
+    expect(billingService.create).not.toHaveBeenCalled();
+    expect(component.importError).toContain('cliente no existe');
   });
 
   it('shows import errors from the backend', () => {
