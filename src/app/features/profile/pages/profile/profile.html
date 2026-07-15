@@ -102,19 +102,23 @@
           </div>
           <div class="logo-manager-actions">
             <p>PNG o JPG, máximo 1 MB.</p>
-            <div class="logo-buttons">
-              <label class="logo-file-button" for="profileLogo">
-                {{ logoPreviewUrl ? 'Cambiar logo' : 'Subir logo' }}
-              </label>
-              <input id="profileLogo" type="file" accept="image/png,image/jpeg"
-                [disabled]="isUploadingLogo || isDeletingLogo" (change)="onLogoSelected($event)" />
-              @if (logoPreviewUrl) {
-                <ui-button type="button" variant="danger" size="sm"
-                  [loading]="isDeletingLogo" (clicked)="deleteLogo()">
-                  Eliminar
-                </ui-button>
-              }
-            </div>
+            @if (canManageLogo) {
+              <div class="logo-buttons">
+                <label class="logo-file-button" for="profileLogo">
+                  {{ logoPreviewUrl ? 'Cambiar logo' : 'Subir logo' }}
+                </label>
+                <input id="profileLogo" type="file" accept="image/png,image/jpeg"
+                  [disabled]="isUploadingLogo || isDeletingLogo" (change)="onLogoSelected($event)" />
+                @if (logoPreviewUrl) {
+                  <ui-button type="button" variant="danger" size="sm"
+                    [loading]="isDeletingLogo" (clicked)="deleteLogo()">
+                    Eliminar
+                  </ui-button>
+                }
+              </div>
+            } @else {
+              <span class="logo-help">Solo los administradores pueden modificar el logo.</span>
+            }
             @if (isUploadingLogo) {
               <span class="logo-help">Subiendo logo...</span>
             }

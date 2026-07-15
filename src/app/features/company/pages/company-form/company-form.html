@@ -31,6 +31,7 @@
       <div class="loading-message">Cargando empresa...</div>
     } @else {
     <form #companyForm="ngForm" (ngSubmit)="guardar(companyForm)" class="space-y-8">
+      <p class="required-fields-note"><span class="required-marker">*</span> Campos obligatorios</p>
       <!-- Identificación -->
       <section>
         <div class="section-header">

@@ -13,6 +13,7 @@
       }
 
       <form #userForm="ngForm" (ngSubmit)="saveUser(userForm)" class="space-y-8">
+        <p class="required-fields-note"><span class="required-marker">*</span> Campos obligatorios</p>
         <section>
           <div class="section-header">
             <span class="icon-box">
@@ -31,7 +32,7 @@
             />
 
             <div class="form-field">
-              <label for="companyId">Empresa</label>
+              <label for="companyId">Empresa <span class="required-marker">*</span></label>
               @if (isSuperAdmin) {
               <select
                 id="companyId"
@@ -64,7 +65,7 @@
             </div>
 
             <div class="form-field md:col-span-2">
-              <label for="password">Contraseña temporal</label>
+              <label for="password">Contraseña temporal <span class="required-marker">*</span></label>
               <div class="relative">
                 <input
                   id="password"
@@ -97,7 +98,7 @@
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="form-field">
-              <label for="rol">Rol asignado</label>
+              <label for="rol">Rol asignado <span class="required-marker">*</span></label>
               @if (isSuperAdmin) {
               <select id="rol" [(ngModel)]="user.rol" name="rol" class="input" required>
                 <option value="ROLE_USER">Usuario</option>
